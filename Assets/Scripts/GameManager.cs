@@ -24,6 +24,18 @@ public class GameManager : MonoBehaviour
         get; set;
     }
 
+    public int PlayerLife
+    {
+        get; set;
+    }
+
+    public Player Player
+    {
+        get; private set;
+    }
+
+    [SerializeField] private Player player;
+
     private void Awake()
     {
         if (instance)
@@ -38,7 +50,9 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        Speed = 6.0f;
+        Speed = 7;
         Coin = 0;
+        PlayerLife = 3;
+        Player = player;
     }
 }
