@@ -6,6 +6,10 @@ public class GameManager : MonoBehaviour
 {
     private static GameManager instance = null;
 
+    public readonly float BaseSpeed = 8;
+    public readonly float GlideSpeed = 10;
+    public readonly int MaxLife = 3;
+
     public static GameManager Instance
     {
         get
@@ -50,9 +54,9 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        Speed = 7;
+        Speed = BaseSpeed;
         Coin = 0;
-        PlayerLife = 3;
+        PlayerLife = MaxLife;
         Player = player;
     }
 }

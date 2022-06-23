@@ -81,6 +81,14 @@ public class Player : MonoBehaviour
             }
         }
 
+        if (Input.GetKey(KeyCode.Space))
+        {
+            if (jumpCount == 0 && glideCount > 0 && status == PlayerStatus.Jumping && rb2d.velocity.y < 0)
+            {
+                GlideStart();
+            }
+        }
+
         if (Input.GetKeyUp(KeyCode.Space))
         {
             if (status == PlayerStatus.Gliding)
@@ -136,12 +144,14 @@ public class Player : MonoBehaviour
         glideCount--;
         rb2d.velocity = Vector2.zero;
         rb2d.gravityScale = glidingGravityScale;
+        GameManager.Instance.Speed = GameManager.Instance.GlideSpeed;
         status = PlayerStatus.Gliding;
     }
 
     private void GlideEnd()
     {
         rb2d.gravityScale = fallingGravityScale;
+        GameManager.Instance.Speed = GameManager.Instance.BaseSpeed;
         status = PlayerStatus.Jumping;
     }
 
@@ -175,6 +185,7 @@ public class Player : MonoBehaviour
 
         if (status == PlayerStatus.Gliding)
         {
+            GlideEnd();
             animator.SetBool("Jump", false);
         }
         
