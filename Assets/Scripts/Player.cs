@@ -24,7 +24,7 @@ public class Player : MonoBehaviour
 
     private readonly float gravityScale = 6;
     private readonly float fallingGravityScale = 6;
-    private readonly float glidingGravityScale = 0.3f;
+    private readonly float glideSpeed = 2;
 
     [HideInInspector] public PlayerStatus status;
 
@@ -114,6 +114,11 @@ public class Player : MonoBehaviour
             }
         }
 
+        if (status == PlayerStatus.Gliding)
+        {
+            transform.Translate(glideSpeed * Time.smoothDeltaTime * Vector3.down);
+        }
+
         if (dashCount < 3)
         {
             dashRemainingCooldown = Mathf.Max(0, dashRemainingCooldown - Time.deltaTime);
@@ -143,7 +148,7 @@ public class Player : MonoBehaviour
     {
         glideCount--;
         rb2d.velocity = Vector2.zero;
-        rb2d.gravityScale = glidingGravityScale;
+        rb2d.gravityScale = 0;
         GameManager.Instance.Speed = GameManager.Instance.GlideSpeed;
         status = PlayerStatus.Gliding;
     }
