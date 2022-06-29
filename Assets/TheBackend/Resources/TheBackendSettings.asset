@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 660911240, guid: f624596d5fe1bd5459a5da424a8abc1b, type: 3}
   m_Name: TheBackendSettings
   m_EditorClassIdentifier: 
-  clientAppID: 
-  signatureKey: 
+  clientAppID: ae58cbd0-f7bc-11ec-b3ea-5beba3c2607f3661
+  signatureKey: ae58f2e0-f7bc-11ec-b3ea-5beba3c2607f3661
   functionAuthKey: 
   packageName: com.YujunCho.FlipToTheSky
   isAllPlatform: 1
