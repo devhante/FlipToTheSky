@@ -2,18 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace FTS
+namespace FTS.LobbyScene
 {
-    public class GameManager : MonoBehaviour
+    public class LobbyManager : MonoBehaviour
     {
-        private static GameManager instance = null;
+        private static LobbyManager instance = null;
 
-        public static GameManager Instance
+        public static LobbyManager Instance
         {
             get
             {
                 return instance;
             }
+        }
+
+        public int Coin
+        {
+            get; set;
         }
 
         private void Awake()
@@ -28,5 +33,4 @@ namespace FTS
             DontDestroyOnLoad(this.gameObject);
         }
     }
-
 }

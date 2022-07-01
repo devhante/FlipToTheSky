@@ -2,18 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace FTS
+namespace FTS.ShopScene
 {
-    public class GameManager : MonoBehaviour
+    public class ShopManager : MonoBehaviour
     {
-        private static GameManager instance = null;
+        private static ShopManager instance = null;
 
-        public static GameManager Instance
+        public readonly int pickOnePrice = 500;
+        public readonly int pickFivePrice = 2400;
+
+        public static ShopManager Instance
         {
             get
             {
                 return instance;
             }
+        }
+
+        public int Coin
+        {
+            get; set;
         }
 
         private void Awake()
@@ -28,5 +36,4 @@ namespace FTS
             DontDestroyOnLoad(this.gameObject);
         }
     }
-
 }
