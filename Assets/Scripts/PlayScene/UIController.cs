@@ -10,10 +10,9 @@ namespace FTS.PlayScene
     public class UIController : MonoBehaviour
     {
         public Image[] lifeImages;
-        public TMP_Text coinText;
-        public TMP_Text dashText;
-        public Slider dashCooldown;
+        public TMP_Text dreampieceText;
         public Button dashButton;
+        public Image dashMask;
         public Button pauseButton;
         public GameObject pauseMask;
         public Button resumeButton;
@@ -22,6 +21,10 @@ namespace FTS.PlayScene
 
         public Sprite filledLifeSprite;
         public Sprite emptyLifeSprite;
+
+        public Sprite[] dashSprites;
+
+        private float dashCooldownValue;
 
         private void Awake()
         {
@@ -38,9 +41,22 @@ namespace FTS.PlayScene
             lifeImages[1].sprite = PlayManager.Instance.PlayerLife < 2 ? emptyLifeSprite : filledLifeSprite;
             lifeImages[2].sprite = PlayManager.Instance.PlayerLife < 3 ? emptyLifeSprite : filledLifeSprite;
 
-            coinText.text = "Coin: " + PlayManager.Instance.Coin.ToString();
-            dashText.text = "Dash: " + PlayManager.Instance.Player.dashCount.ToString();
-            dashCooldown.value = (PlayManager.Instance.Player.dashCooldown - PlayManager.Instance.Player.dashRemainingCooldown) / PlayManager.Instance.Player.dashCooldown;
+            dreampieceText.text =  PlayManager.Instance.Dreampiece.ToString();
+
+            if (dashSprites.Length >= 4)
+            {
+                dashButton.image.sprite = dashSprites[PlayManager.Instance.Player.dashCount];
+            }
+
+            if (PlayManager.Instance.Player.dashCount < 3)
+            {
+                dashCooldownValue = (PlayManager.Instance.Player.dashCooldown - PlayManager.Instance.Player.dashRemainingCooldown) / PlayManager.Instance.Player.dashCooldown;
+                dashMask.rectTransform.offsetMax = new Vector2(dashMask.rectTransform.offsetMax.x, dashCooldownValue * -200);
+            }
+            else
+            {
+                dashMask.rectTransform.offsetMax = new Vector2(dashMask.rectTransform.offsetMax.x, -200);
+            }
         }
 
         private void OnClickDashButton()
@@ -74,7 +90,7 @@ namespace FTS.PlayScene
             Time.timeScale = 1;
             GameManager.Instance.LoadScene("LobbyScene", (callback) =>
             {
-                BackendManager.Instance.SaveCoin(PlayManager.Instance.Coin, () =>
+                BackendManager.Instance.SaveCoin(PlayManager.Instance.Dreampiece, () =>
                 {
                     GameManager.Instance.UpdateUserInfo(() => 
                     {

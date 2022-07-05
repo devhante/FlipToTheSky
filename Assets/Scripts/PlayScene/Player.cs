@@ -45,62 +45,6 @@ namespace FTS.PlayScene
 
         private void Update()
         {
-            // Mobile
-            if (Input.touchCount > 0)
-            {
-                Touch touch = Input.GetTouch(0);
-
-                if (touch.phase == TouchPhase.Began)
-                {
-                    if (jumpCount > 0)
-                    {
-                        Jump();
-                    }
-                }
-                else if (touch.phase == TouchPhase.Stationary || touch.phase == TouchPhase.Moved)
-                {
-                    if (jumpCount == 0 && glideCount > 0 && status == PlayerStatus.Jumping && rb2d.velocity.y < 0)
-                    {
-                        GlideStart();
-                    }
-                }
-                else if (touch.phase == TouchPhase.Ended)
-                {
-                    if (status == PlayerStatus.Gliding)
-                    {
-                        GlideEnd();
-                    }
-                }
-            }
-
-            // PC
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                if (jumpCount > 0)
-                {
-                    Jump();
-                }
-            }
-            else if (Input.GetKey(KeyCode.Space))
-            {
-                if (jumpCount == 0 && glideCount > 0 && status == PlayerStatus.Jumping && rb2d.velocity.y < 0)
-                {
-                    GlideStart();
-                }
-            }
-            else if (Input.GetKeyUp(KeyCode.Space))
-            {
-                if (status == PlayerStatus.Gliding)
-                {
-                    GlideEnd();
-                }
-            }
-            
-            if (Input.GetKeyDown(KeyCode.D))
-            {
-                Dash();
-            }
-
             if (status == PlayerStatus.Jumping)
             {
                 if (rb2d.velocity.y >= 0)
@@ -138,7 +82,31 @@ namespace FTS.PlayScene
             }
         }
 
-        private void Jump()
+        public void OnPressJumpButton()
+        {
+            if (jumpCount > 0)
+            {
+                Jump();
+            }
+        }
+
+        public void OnHoldJumpButton()
+        {
+            if (jumpCount == 0 && glideCount > 0 && status == PlayerStatus.Jumping && rb2d.velocity.y < 0)
+            {
+                GlideStart();
+            }
+        }
+
+        public void OnReleaseJumpButton()
+        {
+            if (status == PlayerStatus.Gliding)
+            {
+                GlideEnd();
+            }
+        }
+
+        public void Jump()
         {
             jumpCount--;
             if (status == PlayerStatus.Running)

@@ -9,7 +9,7 @@ namespace FTS.PlayScene
     {
         public void Obtained(Collider2D collision)
         {
-            PlayManager.Instance.Coin++;
+            PlayManager.Instance.Dreampiece++;
             Destroy(gameObject);
         }
 

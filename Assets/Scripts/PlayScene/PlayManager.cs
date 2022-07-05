@@ -25,7 +25,7 @@ namespace FTS.PlayScene
             get; set;
         }
 
-        public int Coin
+        public int Dreampiece
         {
             get; set;
         }
@@ -56,7 +56,7 @@ namespace FTS.PlayScene
         private void Start()
         {
             Speed = BaseSpeed;
-            Coin = 0;
+            Dreampiece = 0;
             PlayerLife = MaxLife;
             Player = player;
         }
@@ -73,7 +73,7 @@ namespace FTS.PlayScene
         {
             GameManager.Instance.LoadScene("LobbyScene", (callback) =>
             {
-                BackendManager.Instance.SaveCoin(PlayManager.Instance.Coin, () =>
+                BackendManager.Instance.SaveCoin(Dreampiece, () =>
                 {
                     GameManager.Instance.UpdateUserInfo(() =>
                     {
