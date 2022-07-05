@@ -28,121 +28,176 @@ namespace FTS.TheBackend
             instance = this;
         }
 
-        private void Start()
+        private void Update()
         {
-            var bro = Backend.Initialize(true);
-            if (bro.IsSuccess())
+            Backend.AsyncPoll();
+        }
+
+        public void InitAndLogin(GameManager.callback callback)
+        {
+            if (!Backend.IsInitialized)
             {
-                Debug.Log("초기화 성공!");
-                GuestLogin();
-            }
-            else
-            {
-                Debug.LogError("초기화 실패!");
+                Backend.InitializeAsync(true, bro =>
+                {
+                    if (bro.IsSuccess())
+                    {
+                        Debug.Log("초기화 성공!");
+                        GuestLogin(() =>
+                        {
+                            callback();
+                        });
+                    }
+                    else
+                    {
+                        Debug.LogError("초기화 실패!");
+                        callback();
+                    }
+                });
             }
         }
 
-        public void GuestLogin()
+        public void GuestLogin(GameManager.callback callback)
         {
-            var bro = Backend.BMember.GuestLogin("게스트 로그인으로 로그인함");
-            if (bro.IsSuccess())
+            Backend.BMember.GuestLogin("게스트 로그인으로 로그인함", bro =>
             {
-                if (bro.GetStatusCode() == "201")
-                    Debug.Log("게스트 회원가입에 성공했습니다.");
-                else if (bro.GetStatusCode() == "200")
-                    Debug.Log("게스트 로그인에 성공했습니다.");
-            }
+                if (bro.IsSuccess())
+                {
+                    if (bro.GetStatusCode() == "201")
+                        Debug.Log("게스트 회원가입에 성공했습니다.");
+                    else if (bro.GetStatusCode() == "200")
+                        Debug.Log("게스트 로그인에 성공했습니다.");
+                }
+                callback();
+            });
         }
 
-        public int GetCoin()
+        public delegate void userInfoCallback(GameManager.UserInformation value);
+
+
+        public void GetUserInfo(userInfoCallback callback)
         {
-            var bro = Backend.GameData.GetMyData("Coin", new Where(), 1);
+            GameManager.UserInformation userInfo;
 
-            if (!bro.IsSuccess())
+            Backend.GameData.GetMyData("Coin", new Where(), 1, bro =>
             {
-                Debug.LogError(bro);
-                return 0;
-            }
-
-            var data = bro.GetFlattenJSON()["rows"];
-            if (data.Count <= 0)
-            {
-                Param param = new Param();
-                param.Add("having", 0);
-                param.Add("earned", 0);
-                var result = Backend.GameData.Insert("Coin", param);
-                Debug.Log(result);
-                return 0;
-            }
-            else
-            {
-                return (int)data[0]["having"];
-            }
+                if (!bro.IsSuccess())
+                {
+                    Debug.LogError(bro);
+                    userInfo.havingCoin = 0;
+                    userInfo.earnedCoin = 0;
+                }
+                else
+                {
+                    var data = bro.GetFlattenJSON()["rows"];
+                    if (data.Count <= 0)
+                    {
+                        Param param = new Param();
+                        param.Add("having", 0);
+                        param.Add("earned", 0);
+                        Backend.GameData.Insert("Coin", param, bro =>
+                        {
+                            userInfo.havingCoin = 0;
+                            userInfo.earnedCoin = 0;
+                            callback(userInfo);
+                        });
+                    }
+                    else
+                    {
+                        userInfo.havingCoin = (int)data[0]["having"];
+                        userInfo.earnedCoin = (int)data[0]["earned"];
+                        callback(userInfo);
+                    }
+                }
+            });
         }
 
-        public void SaveCoin(int value)
+        public void SaveCoin(int value, GameManager.callback callback)
         {
             int having = 0;
             int earned = 0;
-            var bro = Backend.GameData.GetMyData("Coin", new Where(), 1);
-
-            if (!bro.IsSuccess())
+            Backend.GameData.GetMyData("Coin", new Where(), 1, bro =>
             {
-                Debug.LogError(bro);
-                return;
-            }
+                if (!bro.IsSuccess())
+                {
+                    Debug.LogError(bro);
+                    return;
+                }
 
-            var data = bro.GetFlattenJSON()["rows"];
-            if (data.Count <= 0)
-            {
-                Param param1 = new Param();
-                param1.Add("having", 0);
-                param1.Add("earned", 0);
-                Backend.GameData.Insert("Coin", param1);
-            }
-            else
-            {
-                having = (int)data[0]["having"];
-                earned = (int)data[0]["earned"];
-            }
+                void UpdateCoin()
+                {
+                    having += value;
+                    earned += value;
 
-            having += value;
-            earned += value;
+                    Param param2 = new Param();
+                    param2.Add("having", having);
+                    param2.Add("earned", earned);
+                    Backend.GameData.Update("Coin", new Where(), param2, bro =>
+                    {
+                        callback();
+                    });
+                }
 
-            Param param2 = new Param();
-            param2.Add("having", having);
-            param2.Add("earned", earned);
-            Backend.GameData.Update("Coin", new Where(), param2);
+                var data = bro.GetFlattenJSON()["rows"];
+                if (data.Count <= 0)
+                {
+                    Param param1 = new Param();
+                    param1.Add("having", 0);
+                    param1.Add("earned", 0);
+                    Backend.GameData.Insert("Coin", param1, bro =>
+                    {
+                        UpdateCoin();
+                    });
+                }
+                else
+                {
+                    having = (int)data[0]["having"];
+                    earned = (int)data[0]["earned"];
+
+                    UpdateCoin();
+                }
+            });
         }
 
-        public void UseCoin(int value)
+        public void UseCoin(int value, GameManager.callback callback)
         {
             int having = 0;
-            var bro = Backend.GameData.GetMyData("Coin", new Where(), 1);
 
-            if (!bro.IsSuccess())
+            Backend.GameData.GetMyData("Coin", new Where(), 1, bro =>
             {
-                Debug.LogError(bro);
-                return;
-            }
+                if (!bro.IsSuccess())
+                {
+                    Debug.LogError(bro);
+                    return;
+                }
 
-            var data = bro.GetFlattenJSON()["rows"];
-            if (data.Count <= 0)
-            {
-                Param param1 = new Param();
-                param1.Add("having", 0);
-                Backend.GameData.Insert("Coin", param1);
-            }
-            else
-            {
-                having = (int)data[0]["having"];
-            }
-
-            having -= value;
-
-            Param param2 = new Param();
-            param2.Add("having", having);
-            Backend.GameData.Update("Coin", new Where(), param2);
+                var data = bro.GetFlattenJSON()["rows"];
+                if (data.Count <= 0)
+                {
+                    Param param1 = new Param();
+                    param1.Add("having", 0);
+                    Backend.GameData.Insert("Coin", param1, bro =>
+                    {
+                        callback();
+                    });
+                }
+                else
+                {
+                    having = (int)data[0]["having"] - value;
+                    if (having < 0)
+                    {
+                        callback();
+                    }
+                    else
+                    {
+                        Param param2 = new Param();
+                        param2.Add("having", having);
+                        Backend.GameData.Update("Coin", new Where(), param2, bro =>
+                        {
+                            callback();
+                        });
+                    }
+                }
+            });
         }
     }
 }

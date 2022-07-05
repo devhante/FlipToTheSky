@@ -1,27 +1,38 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class MainManager : MonoBehaviour
+namespace FTS.MainScene
 {
-    private void Update()
+    public class MainManager : MonoBehaviour
     {
-        // Mobile
-        if (Input.touchCount > 0)
+        private void Update()
         {
-            LoadScene();
+            // Mobile
+            if (Input.touchCount > 0)
+            {
+                LoadScene();
+            }
+
+            // PC
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                LoadScene();
+            }
         }
 
-        // PC
-        if (Input.GetKeyDown(KeyCode.Space))
+        private void LoadScene()
         {
-            LoadScene();
+            GameManager.Instance.LoadScene("LobbyScene", (callback) =>
+            {
+                TheBackend.BackendManager.Instance.InitAndLogin(() =>
+                {
+                    GameManager.Instance.UpdateUserInfo(() =>
+                    {
+                        callback();
+                    });
+                });
+            });
         }
-    }
-
-    private void LoadScene()
-    {
-        SceneManager.LoadScene("LobbyScene");
     }
 }

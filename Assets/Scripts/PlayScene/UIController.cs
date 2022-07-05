@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 using FTS.TheBackend;
 
 namespace FTS.PlayScene
@@ -64,14 +63,25 @@ namespace FTS.PlayScene
         private void OnClickRestartButton()
         {
             Time.timeScale = 1;
-            SceneManager.LoadScene("PlayScene");
+            GameManager.Instance.LoadScene("PlayScene", (callback) =>
+            {
+                callback();
+            });
         }
 
         private void OnClickExitButton()
         {
             Time.timeScale = 1;
-            BackendManager.Instance.SaveCoin(PlayManager.Instance.Coin);
-            SceneManager.LoadScene("LobbyScene");
+            GameManager.Instance.LoadScene("LobbyScene", (callback) =>
+            {
+                BackendManager.Instance.SaveCoin(PlayManager.Instance.Coin, () =>
+                {
+                    GameManager.Instance.UpdateUserInfo(() => 
+                    {
+                        callback();
+                    });
+                });
+            });
         }
     }
 }

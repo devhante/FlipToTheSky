@@ -1,8 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using BackEnd;
 using FTS.TheBackend;
 
 namespace FTS.PlayScene
@@ -13,6 +9,7 @@ namespace FTS.PlayScene
 
         public readonly float BaseSpeed = 8;
         public readonly float GlideSpeed = 10;
+        public readonly float DashSpeed = 18;
         public readonly int MaxLife = 3;
 
         public static PlayManager Instance
@@ -74,8 +71,16 @@ namespace FTS.PlayScene
 
         public void GameOver()
         {
-            BackendManager.Instance.SaveCoin(PlayManager.instance.Coin);
-            SceneManager.LoadScene("LobbyScene");
+            GameManager.Instance.LoadScene("LobbyScene", (callback) =>
+            {
+                BackendManager.Instance.SaveCoin(PlayManager.Instance.Coin, () =>
+                {
+                    GameManager.Instance.UpdateUserInfo(() =>
+                    {
+                        callback();
+                    });
+                });
+            });
         }
     }
 }

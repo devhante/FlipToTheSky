@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using FTS.TheBackend;
-using BackEnd;
 
 namespace FTS.LobbyScene
 {
@@ -21,24 +18,25 @@ namespace FTS.LobbyScene
             shopButton.onClick.AddListener(OnClickShopButton);
         }
 
-        private void Start()
-        {
-            LobbyManager.Instance.Coin = BackendManager.Instance.GetCoin();
-        }
-
         private void Update()
         {
-            coinText.text = LobbyManager.Instance.Coin.ToString();
+            coinText.text = GameManager.Instance.UserInfo.havingCoin.ToString();
         }
 
         private void OnClickPlayButton()
         {
-            SceneManager.LoadScene("PlayScene");
+            GameManager.Instance.LoadScene("PlayScene", (callback) => { callback(); });
         }
 
         private void OnClickShopButton()
         {
-            SceneManager.LoadScene("ShopScene");
+            GameManager.Instance.LoadScene("ShopScene", (callback) =>
+            {
+                GameManager.Instance.UpdateUserInfo(() =>
+                {
+                    callback();
+                });
+            });
         }
     }
 }

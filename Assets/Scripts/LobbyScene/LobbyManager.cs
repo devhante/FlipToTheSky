@@ -16,11 +16,6 @@ namespace FTS.LobbyScene
             }
         }
 
-        public int Coin
-        {
-            get; set;
-        }
-
         private void Awake()
         {
             if (instance)
@@ -30,7 +25,6 @@ namespace FTS.LobbyScene
             }
 
             instance = this;
-            DontDestroyOnLoad(this.gameObject);
         }
     }
 }

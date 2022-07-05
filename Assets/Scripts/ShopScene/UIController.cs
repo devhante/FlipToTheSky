@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using BackEnd;
 using FTS.TheBackend;
 
 namespace FTS.ShopScene
@@ -23,37 +21,42 @@ namespace FTS.ShopScene
             backButton.onClick.AddListener(OnClickBackButton);
         }
 
-        private void Start()
-        {
-            ShopManager.Instance.Coin = BackendManager.Instance.GetCoin();
-        }
-
         private void Update()
         {
-            coinText.text = ShopManager.Instance.Coin.ToString();
+            coinText.text = GameManager.Instance.UserInfo.havingCoin.ToString();
         }
 
         private void OnClickPickOneButton()
         {
-            if (ShopManager.Instance.Coin >= ShopManager.Instance.pickOnePrice)
+            if (GameManager.Instance.UserInfo.havingCoin >= ShopManager.Instance.pickOnePrice)
             {
-                BackendManager.Instance.UseCoin(ShopManager.Instance.pickOnePrice);
-                ShopManager.Instance.Coin = BackendManager.Instance.GetCoin();
+                BackendManager.Instance.UseCoin(ShopManager.Instance.pickOnePrice, () =>
+                {
+                    GameManager.Instance.UpdateUserInfo(() => { });
+                });
             }
         }
 
         private void OnClickPickFiveButton()
         {
-            if (ShopManager.Instance.Coin >= ShopManager.Instance.pickFivePrice)
+            if (GameManager.Instance.UserInfo.havingCoin >= ShopManager.Instance.pickFivePrice)
             {
-                BackendManager.Instance.UseCoin(ShopManager.Instance.pickFivePrice);
-                ShopManager.Instance.Coin = BackendManager.Instance.GetCoin();
+                BackendManager.Instance.UseCoin(ShopManager.Instance.pickFivePrice, () =>
+                {
+                    GameManager.Instance.UpdateUserInfo(() => { });
+                });
             }
         }
 
         private void OnClickBackButton()
         {
-            SceneManager.LoadScene("LobbyScene");
+            GameManager.Instance.LoadScene("LobbyScene", (callback) =>
+            {
+                GameManager.Instance.UpdateUserInfo(() =>
+                {
+                    callback();
+                });
+            });
         }
     }
 }

@@ -19,11 +19,6 @@ namespace FTS.ShopScene
             }
         }
 
-        public int Coin
-        {
-            get; set;
-        }
-
         private void Awake()
         {
             if (instance)
@@ -33,7 +28,6 @@ namespace FTS.ShopScene
             }
 
             instance = this;
-            DontDestroyOnLoad(this.gameObject);
         }
     }
 }

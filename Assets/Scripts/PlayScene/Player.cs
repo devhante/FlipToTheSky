@@ -56,7 +56,10 @@ namespace FTS.PlayScene
                     {
                         Jump();
                     }
-                    else if (glideCount > 0)
+                }
+                else if (touch.phase == TouchPhase.Stationary || touch.phase == TouchPhase.Moved)
+                {
+                    if (jumpCount == 0 && glideCount > 0 && status == PlayerStatus.Jumping && rb2d.velocity.y < 0)
                     {
                         GlideStart();
                     }
@@ -77,28 +80,22 @@ namespace FTS.PlayScene
                 {
                     Jump();
                 }
-                else if (glideCount > 0)
-                {
-                    GlideStart();
-                }
             }
-
-            if (Input.GetKey(KeyCode.Space))
+            else if (Input.GetKey(KeyCode.Space))
             {
                 if (jumpCount == 0 && glideCount > 0 && status == PlayerStatus.Jumping && rb2d.velocity.y < 0)
                 {
                     GlideStart();
                 }
             }
-
-            if (Input.GetKeyUp(KeyCode.Space))
+            else if (Input.GetKeyUp(KeyCode.Space))
             {
                 if (status == PlayerStatus.Gliding)
                 {
                     GlideEnd();
                 }
             }
-
+            
             if (Input.GetKeyDown(KeyCode.D))
             {
                 Dash();
@@ -119,6 +116,15 @@ namespace FTS.PlayScene
             if (status == PlayerStatus.Gliding)
             {
                 transform.Translate(glideSpeed * Time.smoothDeltaTime * Vector3.down);
+                PlayManager.Instance.Speed = PlayManager.Instance.GlideSpeed;
+            }
+            else if (status == PlayerStatus.Dashing)
+            {
+                PlayManager.Instance.Speed = PlayManager.Instance.DashSpeed;
+            }
+            else
+            {
+                PlayManager.Instance.Speed = PlayManager.Instance.BaseSpeed;
             }
 
             if (dashCount < 3)
@@ -151,14 +157,12 @@ namespace FTS.PlayScene
             glideCount--;
             rb2d.velocity = Vector2.zero;
             rb2d.gravityScale = 0;
-            PlayManager.Instance.Speed = PlayManager.Instance.GlideSpeed;
             status = PlayerStatus.Gliding;
         }
 
         private void GlideEnd()
         {
             rb2d.gravityScale = fallingGravityScale;
-            PlayManager.Instance.Speed = PlayManager.Instance.BaseSpeed;
             status = PlayerStatus.Jumping;
         }
 
@@ -166,19 +170,17 @@ namespace FTS.PlayScene
         {
             if (dashCount > 0 && status != PlayerStatus.Dashing)
             {
-                dashCount--;
-                status = PlayerStatus.Dashing;
                 StartCoroutine(DashCoroutine());
             }
         }
 
         private IEnumerator DashCoroutine()
         {
+            dashCount--;
             rb2d.velocity = Vector2.zero;
             rb2d.gravityScale = 0;
-            PlayManager.Instance.Speed += 10;
+            status = PlayerStatus.Dashing;
             yield return new WaitForSeconds(0.2f);
-            PlayManager.Instance.Speed -= 10;
             rb2d.gravityScale = fallingGravityScale;
             status = PlayerStatus.Jumping;
         }

@@ -8,6 +8,7 @@ TagManager:
   - Ground
   - Coin
   - Block
+  - LoadingMask
   layers:
   - Default
   - TransparentFX
