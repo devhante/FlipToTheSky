@@ -35,11 +35,23 @@ namespace FTS.PlayScene
             get; set;
         }
 
+        public MainCamera MainCamera
+        {
+            get; private set;
+        }
+
+        public UIController UIController
+        {
+            get; private set;
+        }
+
         public Player Player
         {
             get; private set;
         }
 
+        [SerializeField] private MainCamera mainCamera;
+        [SerializeField] private UIController uiController;
         [SerializeField] private Player player;
 
         private void Awake()
@@ -58,7 +70,10 @@ namespace FTS.PlayScene
             Speed = BaseSpeed;
             Dreampiece = 0;
             PlayerLife = MaxLife;
+            MainCamera = mainCamera;
+            UIController = uiController;
             Player = player;
+            
         }
 
         private void Update()

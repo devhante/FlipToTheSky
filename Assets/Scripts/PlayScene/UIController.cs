@@ -18,6 +18,7 @@ namespace FTS.PlayScene
         public Button resumeButton;
         public Button restartButton;
         public Button exitButton;
+        public GameObject hitEffect;
 
         public Sprite filledLifeSprite;
         public Sprite emptyLifeSprite;
@@ -98,6 +99,18 @@ namespace FTS.PlayScene
                     });
                 });
             });
+        }
+
+        public void PlayHitEffect()
+        {
+            StartCoroutine(HitEffectCoroutine());
+        }
+
+        private IEnumerator HitEffectCoroutine()
+        {
+            hitEffect.SetActive(true);
+            yield return new WaitForSeconds(0.2f);
+            hitEffect.SetActive(false);
         }
     }
 }

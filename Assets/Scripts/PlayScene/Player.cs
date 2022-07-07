@@ -29,6 +29,7 @@ namespace FTS.PlayScene
         private readonly float glideSpeed = 2;
 
         [HideInInspector] public PlayerStatus status;
+        [HideInInspector] public bool hittable;
 
         private void Awake()
         {
@@ -41,6 +42,7 @@ namespace FTS.PlayScene
             dashCooldown = 10;
             dashRemainingCooldown = 10;
             status = PlayerStatus.Running;
+            hittable = true;
         }
 
         private void Update()
@@ -169,6 +171,62 @@ namespace FTS.PlayScene
             jumpCount = 2;
             glideCount = 0;
             status = PlayerStatus.Running;
+        }
+
+        public void Hit()
+        {
+            if (hittable)
+            {
+                PlayManager.Instance.PlayerLife--;
+                PlayManager.Instance.MainCamera.Vibrate(0.2f, 0.3f);
+                PlayManager.Instance.UIController.PlayHitEffect();
+                StartCoroutine(HitCoroutine());
+            }
+        }
+
+        private IEnumerator HitCoroutine()
+        {   
+            float time = 2;
+            float alpha = 0.5f;
+            hittable = false;
+            var sr = GetComponent<SpriteRenderer>();
+            sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, alpha);
+
+            while (time > 1.5f)
+            {
+                time -= Time.smoothDeltaTime;
+                alpha -= Time.smoothDeltaTime;
+                sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, alpha);
+                yield return new WaitForEndOfFrame();
+            }
+
+            while (time > 1)
+            {
+                time -= Time.smoothDeltaTime;
+                alpha += Time.smoothDeltaTime;
+                sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, alpha);
+                yield return new WaitForEndOfFrame();
+            }
+
+            while (time > 0.5f)
+            {
+                time -= Time.smoothDeltaTime;
+                alpha -= Time.smoothDeltaTime;
+                sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, alpha);
+                yield return new WaitForEndOfFrame();
+            }
+
+            while (time > 0)
+            {
+                time -= Time.smoothDeltaTime;
+                alpha += Time.smoothDeltaTime;
+                sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, alpha);
+                yield return new WaitForEndOfFrame();
+            }
+
+            alpha = 1;
+            sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, alpha);
+            hittable = true;
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
