@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1823943885931286101}
   - component: {fileID: 2268930271031669003}
-  - component: {fileID: 1029770479479914993}
   - component: {fileID: 2259731683641401311}
+  - component: {fileID: 1820686723614497336}
   m_Layer: 0
   m_Name: TempBlockTall
   m_TagString: Block
@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -2
-  m_Sprite: {fileID: -135570464, guid: a42dc0fe66abda24ca80176d1d15c244, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9b74a24482284d5438513735ec0004cf, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -86,43 +86,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!60 &1029770479479914993
-PolygonCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 895119347626124535}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 3}
-    newSize: {x: 1, y: 1}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: 0.203125, y: 0.3828125}
-      - {x: 0.1953125, y: 0.484375}
-      - {x: 0.1796875, y: 0.578125}
-      - {x: 0.078125, y: 1.1328125}
-      - {x: 0.0234375, y: 1.4609375}
-      - {x: 0.0078125, y: 1.4765625}
-      - {x: -0.0078125, y: 1.4765625}
-      - {x: -0.0234375, y: 1.4609375}
-      - {x: -0.5, y: -1.3984375}
-      - {x: -0.5, y: -1.5}
-      - {x: 0.5, y: -1.5}
-      - {x: 0.5, y: -1.3984375}
 --- !u!114 &2259731683641401311
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135,3 +98,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d839ab4401d16324c9828d4e61cb20f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!68 &1820686723614497336
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 895119347626124535}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_EdgeRadius: 0
+  m_Points:
+  - {x: -0.66, y: 1.46}
+  - {x: 0.76, y: -1.66}
+  - {x: -0.74, y: -1.71}
+  - {x: -0.66, y: 1.46}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
