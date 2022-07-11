@@ -11,6 +11,7 @@ namespace FTS.PlayScene
     {
         public Image[] lifeImages;
         public TMP_Text dreampieceText;
+        public Button jumpButton;
         public Button dashButton;
         public Image dashMask;
         public Button pauseButton;
@@ -24,6 +25,10 @@ namespace FTS.PlayScene
         public Sprite emptyLifeSprite;
 
         public Sprite[] dashSprites;
+
+        public GameObject flipTitle;
+        public FlipTimer flipTimer;
+        public Warnings warnings;
 
         private float dashCooldownValue;
 
@@ -62,7 +67,7 @@ namespace FTS.PlayScene
 
         private void OnClickDashButton()
         {
-            PlayManager.Instance.Player.Dash();
+            PlayManager.Instance.Player.OnClickDashButton();
         }
 
         private void OnClickPauseButton()
@@ -110,7 +115,22 @@ namespace FTS.PlayScene
         {
             hitEffect.SetActive(true);
             yield return new WaitForSeconds(0.2f);
+
+            float time = 1;
+            float alpha = 1;
+            var images = hitEffect.GetComponentsInChildren<Image>();
+            while (time > 0)
+            {
+                time -= Time.smoothDeltaTime;
+                alpha -= Time.smoothDeltaTime;
+                foreach (var item in images)
+                    item.color = new Color(item.color.r, item.color.g, item.color.b, alpha);
+                yield return new WaitForEndOfFrame();
+            }
+
             hitEffect.SetActive(false);
+            foreach (var item in images)
+                item.color = new Color(item.color.r, item.color.g, item.color.b, 1);
         }
     }
 }

@@ -1,8 +1,17 @@
+using System.Collections;
 using UnityEngine;
 using FTS.TheBackend;
 
 namespace FTS.PlayScene
 {
+    public enum PlayPhase
+    {
+        Run,
+        Flip,
+        Fly,
+        Land
+    }
+
     public class PlayManager : MonoBehaviour
     {
         private static PlayManager instance = null;
@@ -18,6 +27,11 @@ namespace FTS.PlayScene
             {
                 return instance;
             }
+        }
+
+        public PlayPhase Phase
+        {
+            get; set;
         }
 
         public float Speed
@@ -67,13 +81,13 @@ namespace FTS.PlayScene
 
         private void Start()
         {
+            Phase = PlayPhase.Run;
             Speed = BaseSpeed;
             Dreampiece = 0;
             PlayerLife = MaxLife;
             MainCamera = mainCamera;
             UIController = uiController;
             Player = player;
-            
         }
 
         private void Update()
@@ -82,6 +96,31 @@ namespace FTS.PlayScene
             {
                 GameOver();
             }
+        }
+
+        public void EnterFlipPhase()
+        {
+            if (Phase == PlayPhase.Run)
+            {
+                Phase = PlayPhase.Flip;
+                StartCoroutine(FlipPhaseCoroutine());
+            }
+        }
+
+        private IEnumerator FlipPhaseCoroutine()
+        {
+            UIController.flipTitle.SetActive(true);
+            UIController.dashButton.gameObject.SetActive(false);
+            UIController.jumpButton.gameObject.SetActive(false);
+            UIController.warnings.ShowWarning(2, 0, 8);
+            UIController.warnings.ShowWarning(3, 0, 8);
+            UIController.warnings.ShowWarning(4, 0, 8);
+            UIController.warnings.ShowWarning(5, 0, 8);
+            UIController.warnings.ShowWarning(6, 0, 8);
+            yield return new WaitForSeconds(3);
+            UIController.flipTimer.gameObject.SetActive(true);
+            UIController.flipTimer.StartTimer();
+
         }
 
         public void GameOver()

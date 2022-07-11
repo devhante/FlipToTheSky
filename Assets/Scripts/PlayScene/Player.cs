@@ -17,60 +17,34 @@ namespace FTS.PlayScene
         private Rigidbody2D rb2d;
         private Animator animator;
 
-        private int jumpCount;
-        private int jumpPower;
-        private int glideCount;
-        [HideInInspector] public int dashCount;
-        [HideInInspector] public float dashCooldown;
-        [HideInInspector] public float dashRemainingCooldown;
-
-        private readonly float gravityScale = 6;
-        private readonly float fallingGravityScale = 6;
-        private readonly float glideSpeed = 2;
-
         [HideInInspector] public PlayerStatus status;
-        [HideInInspector] public bool hittable;
+        private readonly float gravityScale = 6;
+
+        private int jumpCount = 2;
+        private int jumpPower = 16;
+
+        private readonly float glideSpeed = 2;
+        private int glideCount = 0;
+
+        private readonly float dashDuration = 0.2f;
+        [HideInInspector] public int dashCount = 3;
+        [HideInInspector] public readonly float dashCooldown = 10;
+        [HideInInspector] public float dashRemainingCooldown = 10;
+
+        [HideInInspector] public bool hittable = true;
 
         private void Awake()
         {
             rb2d = GetComponent<Rigidbody2D>();
             animator = GetComponent<Animator>();
-            jumpCount = 2;
-            jumpPower = 16;
-            glideCount = 0;
-            dashCount = 3;
-            dashCooldown = 10;
-            dashRemainingCooldown = 10;
             status = PlayerStatus.Running;
-            hittable = true;
         }
 
         private void Update()
         {
-            if (status == PlayerStatus.Jumping)
-            {
-                if (rb2d.velocity.y >= 0)
-                {
-                    rb2d.gravityScale = gravityScale;
-                }
-                else if (rb2d.velocity.y < 0)
-                {
-                    rb2d.gravityScale = fallingGravityScale;
-                }
-            }
-
             if (status == PlayerStatus.Gliding)
             {
                 transform.Translate(glideSpeed * Time.smoothDeltaTime * Vector3.down);
-                PlayManager.Instance.Speed = PlayManager.Instance.GlideSpeed;
-            }
-            else if (status == PlayerStatus.Dashing)
-            {
-                PlayManager.Instance.Speed = PlayManager.Instance.DashSpeed;
-            }
-            else
-            {
-                PlayManager.Instance.Speed = PlayManager.Instance.BaseSpeed;
             }
 
             if (dashCount < 3)
@@ -108,7 +82,15 @@ namespace FTS.PlayScene
             }
         }
 
-        public void Jump()
+        public void OnClickDashButton()
+        {
+            if (dashCount > 0 && status != PlayerStatus.Dashing)
+            {
+                Dash();
+            }
+        }
+
+        private void Jump()
         {
             jumpCount--;
             if (status == PlayerStatus.Running)
@@ -127,31 +109,35 @@ namespace FTS.PlayScene
             glideCount--;
             rb2d.velocity = Vector2.zero;
             rb2d.gravityScale = 0;
+            PlayManager.Instance.Speed = PlayManager.Instance.GlideSpeed;
             status = PlayerStatus.Gliding;
         }
 
         private void GlideEnd()
         {
-            rb2d.gravityScale = fallingGravityScale;
+            rb2d.gravityScale = gravityScale;
+            PlayManager.Instance.Speed = PlayManager.Instance.BaseSpeed;
             status = PlayerStatus.Jumping;
         }
 
-        public void Dash()
+        private void Dash()
         {
-            if (dashCount > 0 && status != PlayerStatus.Dashing)
-            {
-                StartCoroutine(DashCoroutine());
-            }
+            StartCoroutine(DashCoroutine());
         }
 
         private IEnumerator DashCoroutine()
         {
             dashCount--;
             rb2d.velocity = Vector2.zero;
+
             rb2d.gravityScale = 0;
+            PlayManager.Instance.Speed = PlayManager.Instance.DashSpeed;
             status = PlayerStatus.Dashing;
-            yield return new WaitForSeconds(0.2f);
-            rb2d.gravityScale = fallingGravityScale;
+
+            yield return new WaitForSeconds(dashDuration);
+
+            rb2d.gravityScale = gravityScale;
+            PlayManager.Instance.Speed = PlayManager.Instance.BaseSpeed;
             status = PlayerStatus.Jumping;
         }
 
@@ -226,6 +212,8 @@ namespace FTS.PlayScene
 
             alpha = 1;
             sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, alpha);
+            yield return new WaitForSeconds(0.5f);
+
             hittable = true;
         }
 
