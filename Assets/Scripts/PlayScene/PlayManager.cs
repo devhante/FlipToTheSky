@@ -103,6 +103,7 @@ namespace FTS.PlayScene
             if (Phase == PlayPhase.Run)
             {
                 Phase = PlayPhase.Flip;
+                Player.EnterFlipPhase();
                 StartCoroutine(FlipPhaseCoroutine());
             }
         }

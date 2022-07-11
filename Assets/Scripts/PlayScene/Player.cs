@@ -226,6 +226,15 @@ namespace FTS.PlayScene
             hittable = true;
         }
 
+        public void EnterFlipPhase()
+        {
+            if (status == PlayerStatus.Gliding)
+            {
+                rb2d.velocity = Vector2.zero;
+                rb2d.gravityScale = gravityScale;
+            }
+        }
+
         public void Flip()
         {
             if (PlayManager.Instance.Phase == PlayPhase.Flip && status == PlayerStatus.Running)
