@@ -8,7 +8,11 @@ namespace FTS.PlayScene
     {
         private float shakeAmount;
         private float shakeTime;
-        Vector3 initialPosition;
+
+        public Vector3 InitialPosition
+        {
+            get; set;
+        }
 
         public void Vibrate(float amount, float time)
         {
@@ -18,20 +22,20 @@ namespace FTS.PlayScene
 
         private void Start()
         {
-            initialPosition = transform.position;
+            InitialPosition = transform.position;
         }
 
         private void Update()
         {
             if (shakeTime > 0)
             {
-                transform.position = Random.insideUnitSphere * shakeAmount + initialPosition;
+                transform.position = Random.insideUnitSphere * shakeAmount + InitialPosition;
                 shakeTime -= Time.deltaTime;
             }
             else
             {
                 shakeTime = 0;
-                transform.position = initialPosition;
+                transform.position = InitialPosition;
             }
         }
     }

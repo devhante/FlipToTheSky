@@ -9,9 +9,18 @@ namespace FTS.PlayScene
         public GameObject[] warningsX;
         public GameObject[] warningsY;
 
+        private List<IEnumerator> coroutines;
+
+        private void Awake()
+        {
+            coroutines = new List<IEnumerator>();
+        }
+
         public void ShowWarning(int x, int y, float time)
         {
-            StartCoroutine(ShowWarningCoroutine(x, y, time));
+            IEnumerator coroutine = ShowWarningCoroutine(x, y, time);
+            coroutines.Add(coroutine);
+            StartCoroutine(coroutine);
         }
 
         private IEnumerator ShowWarningCoroutine(int x, int y, float time)
@@ -33,6 +42,22 @@ namespace FTS.PlayScene
                 target.SetActive(true);
                 yield return new WaitForSeconds(time);
                 target.SetActive(false);
+            }
+        }
+
+        public void HideWarnings()
+        {
+            foreach (var i in coroutines)
+            {
+                StopCoroutine(i);
+            }
+            foreach (var i in warningsX)
+            {
+                i.SetActive(false);
+            }
+            foreach (var i in warningsY)
+            {
+                i.SetActive(false);
             }
         }
     }

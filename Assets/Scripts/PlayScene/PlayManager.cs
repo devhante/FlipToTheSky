@@ -109,6 +109,7 @@ namespace FTS.PlayScene
 
         private IEnumerator FlipPhaseCoroutine()
         {
+            StartCoroutine(FlipTouchCoroutine());
             UIController.flipTitle.SetActive(true);
             UIController.dashButton.gameObject.SetActive(false);
             UIController.jumpButton.gameObject.SetActive(false);
@@ -118,9 +119,54 @@ namespace FTS.PlayScene
             UIController.warnings.ShowWarning(5, 0, 8);
             UIController.warnings.ShowWarning(6, 0, 8);
             yield return new WaitForSeconds(3);
-            UIController.flipTimer.gameObject.SetActive(true);
-            UIController.flipTimer.StartTimer();
+            if (Player.status != PlayerStatus.Fliping)
+            {
+                UIController.flipTimer.gameObject.SetActive(true);
+                UIController.flipTimer.StartTimer();
+            }
+        }
 
+        private IEnumerator FlipTouchCoroutine()
+        {
+            bool flipped = false;
+            Vector2 startTouchPos = Vector2.zero;
+            Vector2 endTouchPos;
+            
+            while (!flipped)
+            {
+                if (Input.touchCount > 0)
+                {
+                    Touch touch = Input.GetTouch(0);
+                    if (touch.phase == TouchPhase.Began)
+                    {
+                        startTouchPos = touch.position;
+                    }
+                    if (touch.phase == TouchPhase.Ended)
+                    {
+                        endTouchPos = touch.position;
+                        if (endTouchPos.y > startTouchPos.y)
+                        {
+                            flipped = true;
+                            UIController.warnings.HideWarnings();
+                            UIController.flipTitle.SetActive(false);
+                            UIController.flipTimer.gameObject.SetActive(false);
+                            Player.Flip();
+                        }
+                    }
+                }
+
+                // TEST
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    flipped = true;
+                    UIController.warnings.HideWarnings();
+                    UIController.flipTitle.SetActive(false);
+                    UIController.flipTimer.gameObject.SetActive(false);
+                    Player.Flip();
+                }
+
+                yield return null;
+            }
         }
 
         public void GameOver()

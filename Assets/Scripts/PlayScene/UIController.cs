@@ -125,7 +125,7 @@ namespace FTS.PlayScene
                 alpha -= Time.smoothDeltaTime;
                 foreach (var item in images)
                     item.color = new Color(item.color.r, item.color.g, item.color.b, alpha);
-                yield return new WaitForEndOfFrame();
+                yield return null;
             }
 
             hitEffect.SetActive(false);

@@ -10,6 +10,8 @@ namespace FTS.PlayScene
         Jumping,
         Gliding,
         Dashing,
+        Fliping,
+        Flying,
     }
 
     public class Player : MonoBehaviour
@@ -33,6 +35,8 @@ namespace FTS.PlayScene
 
         [HideInInspector] public bool hittable = true;
 
+        private int flipSpeed = 10;
+
         private void Awake()
         {
             rb2d = GetComponent<Rigidbody2D>();
@@ -42,11 +46,6 @@ namespace FTS.PlayScene
 
         private void Update()
         {
-            if (status == PlayerStatus.Gliding)
-            {
-                transform.Translate(glideSpeed * Time.smoothDeltaTime * Vector3.down);
-            }
-
             if (dashCount < 3)
             {
                 dashRemainingCooldown = Mathf.Max(0, dashRemainingCooldown - Time.deltaTime);
@@ -111,6 +110,7 @@ namespace FTS.PlayScene
             rb2d.gravityScale = 0;
             PlayManager.Instance.Speed = PlayManager.Instance.GlideSpeed;
             status = PlayerStatus.Gliding;
+            StartCoroutine(GlideCoroutine());
         }
 
         private void GlideEnd()
@@ -118,6 +118,15 @@ namespace FTS.PlayScene
             rb2d.gravityScale = gravityScale;
             PlayManager.Instance.Speed = PlayManager.Instance.BaseSpeed;
             status = PlayerStatus.Jumping;
+        }
+
+        private IEnumerator GlideCoroutine()
+        {
+            while (status == PlayerStatus.Gliding)
+            {
+                transform.Translate(glideSpeed * Time.smoothDeltaTime * Vector3.down);
+                yield return null;
+            }
         }
 
         private void Dash()
@@ -183,7 +192,7 @@ namespace FTS.PlayScene
                 time -= Time.smoothDeltaTime;
                 alpha -= Time.smoothDeltaTime;
                 sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, alpha);
-                yield return new WaitForEndOfFrame();
+                yield return null;
             }
 
             while (time > 1)
@@ -191,7 +200,7 @@ namespace FTS.PlayScene
                 time -= Time.smoothDeltaTime;
                 alpha += Time.smoothDeltaTime;
                 sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, alpha);
-                yield return new WaitForEndOfFrame();
+                yield return null;
             }
 
             while (time > 0.5f)
@@ -199,7 +208,7 @@ namespace FTS.PlayScene
                 time -= Time.smoothDeltaTime;
                 alpha -= Time.smoothDeltaTime;
                 sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, alpha);
-                yield return new WaitForEndOfFrame();
+                yield return null;
             }
 
             while (time > 0)
@@ -207,7 +216,7 @@ namespace FTS.PlayScene
                 time -= Time.smoothDeltaTime;
                 alpha += Time.smoothDeltaTime;
                 sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, alpha);
-                yield return new WaitForEndOfFrame();
+                yield return null;
             }
 
             alpha = 1;
@@ -215,6 +224,40 @@ namespace FTS.PlayScene
             yield return new WaitForSeconds(0.5f);
 
             hittable = true;
+        }
+
+        public void Flip()
+        {
+            if (PlayManager.Instance.Phase == PlayPhase.Flip && status == PlayerStatus.Running)
+            {
+                StartCoroutine(FlipCoroutine());
+            }
+        }
+
+        private IEnumerator FlipCoroutine()
+        {
+            PlayManager.Instance.Speed = 0;
+            animator.SetBool("Flip", true);
+            status = PlayerStatus.Fliping;
+            yield return new WaitForSeconds(0.25f);
+
+            PlayManager.Instance.Speed = PlayManager.Instance.BaseSpeed;
+            float startPosY = transform.position.y;
+            rb2d.velocity = Vector2.zero;
+            rb2d.gravityScale = 0;
+
+            while (transform.position.y < startPosY + 18)
+            {
+                transform.Translate(flipSpeed * Time.smoothDeltaTime * Vector3.up);
+                PlayManager.Instance.MainCamera.InitialPosition += flipSpeed * Time.smoothDeltaTime * Vector3.up;
+                yield return null;
+            }
+
+            transform.position = new Vector3(transform.position.x, startPosY + 18, transform.position.z);
+            PlayManager.Instance.MainCamera.InitialPosition = new Vector3(PlayManager.Instance.MainCamera.InitialPosition.x, 18, PlayManager.Instance.MainCamera.InitialPosition.z);
+            PlayManager.Instance.Phase = PlayPhase.Fly;
+            status = PlayerStatus.Flying;
+            animator.SetBool("Flip", false);
         }
 
         private void OnCollisionEnter2D(Collision2D collision)

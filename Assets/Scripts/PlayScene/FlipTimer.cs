@@ -28,7 +28,7 @@ namespace FTS.PlayScene
             {
                 value = Mathf.Max(value - Time.smoothDeltaTime, 0);
                 slider.value = value / time;
-                yield return new WaitForEndOfFrame();
+                yield return null;
             }
         }
     }
