@@ -15,28 +15,28 @@ namespace FTS.PlayScene
         private void Awake()
         {
             spawnPointH = new List<Vector2>
-        {
-            new Vector2(20f, 7.5f),
-            new Vector2(20f, 5f),
-            new Vector2(20f, 2.5f),
-            new Vector2(20f, 0f),
-            new Vector2(20f, -2.5f),
-            new Vector2(20f, -5f),
-            new Vector2(20f, -7.5f)
-        };
+            {
+                new Vector2(20f, 7.5f),
+                new Vector2(20f, 5f),
+                new Vector2(20f, 2.5f),
+                new Vector2(20f, 0f),
+                new Vector2(20f, -2.5f),
+                new Vector2(20f, -5f),
+                new Vector2(20f, -7.5f)
+            };
             spawnPointV = new List<Vector2>
-        {
-            new Vector2(-14.5f, -13f),
-            new Vector2(-11.25f, -13f),
-            new Vector2(-8f, -13f),
-            new Vector2(-4.75f, -13f),
-            new Vector2(-1.5f, -13f),
-            new Vector2(1.75f, -13f),
-            new Vector2(5f, -13f),
-            new Vector2(8.25f, -13f),
-            new Vector2(11.5f, -13f),
-            new Vector2(-14.75f, -13f),
-        };
+            {
+                new Vector2(-14.5f, -13f),
+                new Vector2(-11.25f, -13f),
+                new Vector2(-8f, -13f),
+                new Vector2(-4.75f, -13f),
+                new Vector2(-1.5f, -13f),
+                new Vector2(1.75f, -13f),
+                new Vector2(5f, -13f),
+                new Vector2(8.25f, -13f),
+                new Vector2(11.5f, -13f),
+                new Vector2(-14.75f, -13f),
+            };
         }
 
         public void Spawn(int h, int v)
@@ -49,7 +49,7 @@ namespace FTS.PlayScene
             }
             else if (v > 0 && v <= spawnPointV.Count && h == 0)
             {
-                Instantiate(blockH, cameraPos + spawnPointH[v - 1], Quaternion.identity);
+                Instantiate(blockV, cameraPos + spawnPointV[v - 1], Quaternion.identity);
             }
         }
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace FTS.PlayScene
 {
-    public class FlyingBlock : Block
+    public class FlyingBlockH : Block
     {
         private void Update()
         {
