@@ -14,7 +14,12 @@ namespace FTS.PlayScene
             slider = GetComponent<Slider>();
         }
 
-        float time = 5;
+        public float TimeLimit
+        {
+            get; private set;
+        } = 5;
+
+
         public void StartTimer()
         {
             StartCoroutine(StartTimerCoroutine());
@@ -22,12 +27,12 @@ namespace FTS.PlayScene
         
         private IEnumerator StartTimerCoroutine()
         {
-            float value = time;
+            float value = TimeLimit;
             
             while (value > 0)
             {
                 value = Mathf.Max(value - Time.smoothDeltaTime, 0);
-                slider.value = value / time;
+                slider.value = value / TimeLimit;
                 yield return null;
             }
         }

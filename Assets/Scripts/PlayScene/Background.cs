@@ -10,7 +10,7 @@ namespace FTS.PlayScene
         {
             if (transform.position.x < -64)
             {
-                transform.Translate(new Vector3(192, 0, 0));
+                transform.Translate(new Vector3(189, 0, 0));
             }
             else
             {

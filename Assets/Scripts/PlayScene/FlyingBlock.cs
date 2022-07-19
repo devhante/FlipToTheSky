@@ -4,21 +4,8 @@ using UnityEngine;
 
 namespace FTS.PlayScene
 {
-    public class Level : MonoBehaviour
+    public class FlyingBlock : Block
     {
-        public PlayPhase phase;
-
-        private void OnTriggerEnter2D(Collider2D collision)
-        {
-            if (collision.CompareTag("Player"))
-            {
-                if (PlayManager.Instance.Phase != phase)
-                {
-                    PlayManager.Instance.EnterPhase(phase);
-                }
-            }
-        }
-
         private void Update()
         {
             if (transform.position.x < -64)

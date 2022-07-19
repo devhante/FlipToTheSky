@@ -64,6 +64,7 @@ namespace FTS.PlayScene
             get; private set;
         }
 
+
         [SerializeField] private MainCamera mainCamera;
         [SerializeField] private UIController uiController;
         [SerializeField] private Player player;
@@ -98,14 +99,24 @@ namespace FTS.PlayScene
             }
         }
 
-        public void EnterFlipPhase()
+        public void EnterPhase(PlayPhase phase)
         {
-            if (Phase == PlayPhase.Run)
+            Debug.Log("EnterPhase(" + phase + ")");
+            if (phase == PlayPhase.Flip)
             {
                 Phase = PlayPhase.Flip;
                 Player.EnterFlipPhase();
                 StartCoroutine(FlipPhaseCoroutine());
             }
+            if (phase == PlayPhase.Run)
+            {
+                Phase = PlayPhase.Run;
+            }
+        }
+
+        public void ExitFlipPhase()
+        {
+            Phase = PlayPhase.Run;
         }
 
         private IEnumerator FlipPhaseCoroutine()
@@ -120,10 +131,20 @@ namespace FTS.PlayScene
             UIController.warnings.ShowWarning(5, 0, 8);
             UIController.warnings.ShowWarning(6, 0, 8);
             yield return new WaitForSeconds(3);
-            if (Player.status != PlayerStatus.Fliping)
+            if (Player.status == PlayerStatus.Running)
             {
                 UIController.flipTimer.gameObject.SetActive(true);
                 UIController.flipTimer.StartTimer();
+                Debug.Log("new WaitForSeconds(" + UIController.flipTimer.TimeLimit + ")");
+                yield return new WaitForSeconds(UIController.flipTimer.TimeLimit);
+
+                if (Player.status == PlayerStatus.Running)
+                {
+                    UIController.flipTitle.SetActive(false);
+                    UIController.flipTimer.gameObject.SetActive(false);
+                    UIController.dashButton.gameObject.SetActive(true);
+                    UIController.jumpButton.gameObject.SetActive(true);
+                }
             }
         }
 

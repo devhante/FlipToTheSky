@@ -6,8 +6,9 @@ namespace FTS.PlayScene
 {
     public class Warnings : MonoBehaviour
     {
-        public GameObject[] warningsX;
-        public GameObject[] warningsY;
+        public GameObject[] warningsH;
+        public GameObject[] warningsV;
+        public BlockSpawner blockSpawner;
 
         private List<IEnumerator> coroutines;
 
@@ -16,32 +17,34 @@ namespace FTS.PlayScene
             coroutines = new List<IEnumerator>();
         }
 
-        public void ShowWarning(int x, int y, float time)
+        public void ShowWarning(int h, int v, float time)
         {
-            IEnumerator coroutine = ShowWarningCoroutine(x, y, time);
+            IEnumerator coroutine = ShowWarningCoroutine(h, v, time);
             coroutines.Add(coroutine);
             StartCoroutine(coroutine);
         }
 
-        private IEnumerator ShowWarningCoroutine(int x, int y, float time)
+        private IEnumerator ShowWarningCoroutine(int h, int v, float time)
         {
             GameObject target = null;
 
-            if (x > 0 && x <= warningsX.Length && y == 0)
+            if (h > 0 && h <= warningsH.Length && v == 0)
             {
-                target = warningsX[x];
+                target = warningsH[h - 1];
                 
             }
-            else if (y > 0 && y <= warningsY.Length && x == 0)
+            else if (v > 0 && v <= warningsV.Length && h == 0)
             {
-                target = warningsY[y];
+                target = warningsV[v - 1];
             }
 
             if (target != null)
             {
                 target.SetActive(true);
                 yield return new WaitForSeconds(time);
+
                 target.SetActive(false);
+                blockSpawner.Spawn(h, v);
             }
         }
 
@@ -51,11 +54,11 @@ namespace FTS.PlayScene
             {
                 StopCoroutine(i);
             }
-            foreach (var i in warningsX)
+            foreach (var i in warningsH)
             {
                 i.SetActive(false);
             }
-            foreach (var i in warningsY)
+            foreach (var i in warningsV)
             {
                 i.SetActive(false);
             }
