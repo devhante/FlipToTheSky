@@ -9,11 +9,9 @@ namespace FTS.PlayScene
     {
         public void OnTriggerEnter2D(Collider2D collision)
         {
-            if (collision.CompareTag("Player")
-                && PlayManager.Instance.Player.status != PlayerStatus.Dashing
-                && PlayManager.Instance.Player.hittable)
+            if (collision.CompareTag("Player"))
             {
-                PlayManager.Instance.Player.Hit();
+                Player.Instance.Hit();
             }
         }
     }

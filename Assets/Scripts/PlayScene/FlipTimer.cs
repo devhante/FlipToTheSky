@@ -9,16 +9,12 @@ namespace FTS.PlayScene
     {
         private Slider slider;
 
+        public float TimeLimit { get; private set; } = 5;
+
         private void Awake()
         {
             slider = GetComponent<Slider>();
         }
-
-        public float TimeLimit
-        {
-            get; private set;
-        } = 5;
-
 
         public void StartTimer()
         {

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace FTS.PlayScene
 {
-    public class LevelController : MonoBehaviour
+    public class LevelSpawner : MonoBehaviour
     {
         public GameObject[] runLevels;
         public GameObject flipLevel;
@@ -12,13 +12,13 @@ namespace FTS.PlayScene
         public GameObject landLevel;
 
         private int levelCount;
-        private PlayPhase levelPhase;
+        private GamePhase levelPhase;
         private GameObject lastLevel;
 
         private void Start()
         {
             levelCount = 1;
-            levelPhase = PlayPhase.Run;
+            levelPhase = GamePhase.Run;
             Instantiate(runLevels[Random.Range(0, runLevels.Length)], new Vector3(30, 0, 0), Quaternion.identity);
             Instantiate(runLevels[Random.Range(0, runLevels.Length)], new Vector3(60, 0, 0), Quaternion.identity);
             lastLevel = Instantiate(runLevels[Random.Range(0, runLevels.Length)], new Vector3(90, 0, 0), Quaternion.identity);
@@ -29,19 +29,24 @@ namespace FTS.PlayScene
         {
             while (true)
             {
-                Debug.Log(PlayManager.Instance.Phase);
-                if (PlayManager.Instance.Phase != PlayPhase.Fly)
+                if (PlaySceneManager.Instance.Phase != GamePhase.Fly)
                 {
                     yield return null;
                 }
                 else
                 {
-                    int hMax = PlayManager.Instance.UIController.warnings.warningsH.Length;
-                    int vMax = PlayManager.Instance.UIController.warnings.warningsV.Length;
-                    bool isH = Random.Range(0, 2) == 0;
-                    int coordH = isH ? Random.Range(1, hMax + 1) : 0;
-                    int coordV = isH ? 0 : Random.Range(1, vMax + 1);
-                    PlayManager.Instance.UIController.warnings.ShowWarning(coordH, coordV, 2);
+                    bool isHorizontal = Random.Range(0, 2) == 0;
+
+                    int maxIndex = isHorizontal ? FlyingBlockSpawner.Instance.MaxHorizontalIndex
+                        : FlyingBlockSpawner.Instance.MaxVerticalIndex;
+
+                    int index = Random.Range(0, maxIndex);
+
+                    if (isHorizontal)
+                        FlyingBlockSpawner.Instance.SpawnHorizontalBlock(index, 2);
+                    else
+                        FlyingBlockSpawner.Instance.SpawnVerticalBlock(index, 2);
+
                     yield return new WaitForSeconds(2);
                 }
             }
@@ -53,40 +58,40 @@ namespace FTS.PlayScene
             {
                 if (levelCount <= 0)
                 {
-                    if (levelPhase == PlayPhase.Run)
+                    if (levelPhase == GamePhase.Run)
                     {
-                        levelPhase = PlayPhase.Flip;
+                        levelPhase = GamePhase.Flip;
                         levelCount = 3;
                     }
-                    else if (levelPhase == PlayPhase.Flip)
+                    else if (levelPhase == GamePhase.Flip)
                     {
-                        levelPhase = PlayPhase.Fly;
+                        levelPhase = GamePhase.Fly;
                         levelCount = 5;
                     }
-                    else if (levelPhase == PlayPhase.Fly)
+                    else if (levelPhase == GamePhase.Fly)
                     {
-                        levelPhase = PlayPhase.Land;
+                        levelPhase = GamePhase.Land;
                         levelCount = 3;
                     }
-                    else if (levelPhase == PlayPhase.Land)
+                    else if (levelPhase == GamePhase.Land)
                     {
-                        levelPhase = PlayPhase.Run;
+                        levelPhase = GamePhase.Run;
                         levelCount = 5;
                     }
                 }
 
                 switch (levelPhase)
                 {
-                    case PlayPhase.Run:
+                    case GamePhase.Run:
                         lastLevel = Instantiate(runLevels[Random.Range(0, runLevels.Length)], new Vector3(lastLevel.transform.position.x + 30, 0, 0), Quaternion.identity);
                         break;
-                    case PlayPhase.Flip:
+                    case GamePhase.Flip:
                         lastLevel = Instantiate(flipLevel, new Vector3(lastLevel.transform.position.x + 30, 0, 0), Quaternion.identity);
                         break;
-                    case PlayPhase.Fly:
+                    case GamePhase.Fly:
                         lastLevel = Instantiate(runLevels[Random.Range(0, runLevels.Length)], new Vector3(lastLevel.transform.position.x + 30, 0, 0), Quaternion.identity);
                         break;
-                    case PlayPhase.Land:
+                    case GamePhase.Land:
                         lastLevel = Instantiate(runLevels[Random.Range(0, runLevels.Length)], new Vector3(lastLevel.transform.position.x + 30, 0, 0), Quaternion.identity);
                         break;
                 }

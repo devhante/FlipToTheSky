@@ -10,11 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 1823943885931286101}
   - component: {fileID: 2268930271031669003}
-  - component: {fileID: 7871942727950646026}
+  - component: {fileID: -1226270086154795952}
   - component: {fileID: 7075514911642178651}
   - component: {fileID: 707201683592750223}
   m_Layer: 0
-  m_Name: OfficeBlockFlyingH
+  m_Name: OfficeFlyingLeftBlock
   m_TagString: Block
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -87,7 +87,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &7871942727950646026
+--- !u!114 &-1226270086154795952
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -96,9 +96,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 895119347626124535}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b34c3d9134d71a4ba5106410e96303b, type: 3}
+  m_Script: {fileID: 11500000, guid: 7341fa7221e5d694a855dd06ede53bf9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  direction: 0
 --- !u!61 &7075514911642178651
 BoxCollider2D:
   m_ObjectHideFlags: 0

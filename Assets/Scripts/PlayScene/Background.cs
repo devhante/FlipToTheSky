@@ -14,7 +14,7 @@ namespace FTS.PlayScene
             }
             else
             {
-                transform.Translate(PlayManager.Instance.Speed * 0.2f * Time.smoothDeltaTime * Vector3.left);
+                transform.Translate(Player.Instance.MoveSpeed * 0.2f * Time.smoothDeltaTime * Vector3.left);
             }
         }
     }

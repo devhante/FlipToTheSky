@@ -9,6 +9,16 @@ namespace FTS.PlayScene
 {
     public class UIController : MonoBehaviour
     {
+        private static UIController instance = null;
+
+        public static UIController Instance
+        {
+            get
+            {
+                return instance;
+            }
+        }
+
         public Image[] lifeImages;
         public TMP_Text dreampieceText;
         public Button jumpButton;
@@ -28,12 +38,18 @@ namespace FTS.PlayScene
 
         public GameObject flipTitle;
         public FlipTimer flipTimer;
-        public Warnings warnings;
 
         private float dashCooldownValue;
 
         private void Awake()
         {
+            if (instance)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            instance = this;
+
             dashButton.onClick.AddListener(OnClickDashButton);
             pauseButton.onClick.AddListener(OnClickPauseButton);
             resumeButton.onClick.AddListener(OnClickResumeButton);
@@ -43,20 +59,20 @@ namespace FTS.PlayScene
 
         private void Update()
         {
-            lifeImages[0].sprite = PlayManager.Instance.PlayerLife < 1 ? emptyLifeSprite : filledLifeSprite;
-            lifeImages[1].sprite = PlayManager.Instance.PlayerLife < 2 ? emptyLifeSprite : filledLifeSprite;
-            lifeImages[2].sprite = PlayManager.Instance.PlayerLife < 3 ? emptyLifeSprite : filledLifeSprite;
+            lifeImages[0].sprite = PlaySceneManager.Instance.PlayerLife < 1 ? emptyLifeSprite : filledLifeSprite;
+            lifeImages[1].sprite = PlaySceneManager.Instance.PlayerLife < 2 ? emptyLifeSprite : filledLifeSprite;
+            lifeImages[2].sprite = PlaySceneManager.Instance.PlayerLife < 3 ? emptyLifeSprite : filledLifeSprite;
 
-            dreampieceText.text =  PlayManager.Instance.Dreampiece.ToString();
+            dreampieceText.text = PlaySceneManager.Instance.Dreampiece.ToString();
 
             if (dashSprites.Length >= 4)
             {
-                dashButton.image.sprite = dashSprites[PlayManager.Instance.Player.dashCount];
+                dashButton.image.sprite = dashSprites[Player.Instance.DashCount];
             }
 
-            if (PlayManager.Instance.Player.dashCount < 3)
+            if (Player.Instance.DashCount < 3)
             {
-                dashCooldownValue = (PlayManager.Instance.Player.dashCooldown - PlayManager.Instance.Player.dashRemainingCooldown) / PlayManager.Instance.Player.dashCooldown;
+                dashCooldownValue = (Player.Instance.DashCooldown - Player.Instance.DashRemainingCooldown) / Player.Instance.DashCooldown;
                 dashMask.rectTransform.offsetMax = new Vector2(dashMask.rectTransform.offsetMax.x, dashCooldownValue * -200);
             }
             else
@@ -67,7 +83,7 @@ namespace FTS.PlayScene
 
         private void OnClickDashButton()
         {
-            PlayManager.Instance.Player.OnClickDashButton();
+            Player.Instance.OnClickDashButton();
         }
 
         private void OnClickPauseButton()
@@ -96,7 +112,7 @@ namespace FTS.PlayScene
             Time.timeScale = 1;
             GameManager.Instance.LoadScene("LobbyScene", (callback) =>
             {
-                BackendManager.Instance.SaveCoin(PlayManager.Instance.Dreampiece, () =>
+                BackendManager.Instance.SaveCoin(PlaySceneManager.Instance.Dreampiece, () =>
                 {
                     GameManager.Instance.UpdateUserInfo(() => 
                     {
@@ -131,6 +147,25 @@ namespace FTS.PlayScene
             hitEffect.SetActive(false);
             foreach (var item in images)
                 item.color = new Color(item.color.r, item.color.g, item.color.b, 1);
+        }
+
+        public GameObject[] rightWarnings;
+        public GameObject[] downWarnings;
+
+        public GameObject GetRightWarning(int index)
+        {
+            if (index < rightWarnings.Length)
+                return rightWarnings[index];
+            else
+                return null;
+        }
+
+        public GameObject GetDownWarning(int index)
+        {
+            if (index < downWarnings.Length)
+                return downWarnings[index];
+            else
+                return null;
         }
     }
 }

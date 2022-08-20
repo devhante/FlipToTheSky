@@ -5,11 +5,11 @@ using UnityEngine.Tilemaps;
 
 namespace FTS.PlayScene
 {
-    public class Coin : MonoBehaviour, IObtainable
+    public class DreamPiece : MonoBehaviour, IObtainable
     {
         public void Obtained(Collider2D collision)
         {
-            PlayManager.Instance.Dreampiece++;
+            PlaySceneManager.Instance.Dreampiece++;
             Destroy(gameObject);
         }
 

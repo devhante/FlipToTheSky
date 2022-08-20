@@ -13,20 +13,23 @@ namespace FTS.PlayScene
         {
             if (isButtonDown)
             {
-                PlayManager.Instance.Player.OnHoldJumpButton();
+                if (Player.Instance.Status != PlayerStatus.Gliding)
+                {
+                    Player.Instance.StartGliding();
+                }
             }
         }
 
         public void OnPointerDown(PointerEventData eventData)
         {
             isButtonDown = true;
-            PlayManager.Instance.Player.OnPressJumpButton();
+            Player.Instance.Jump();
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
             isButtonDown = false;
-            PlayManager.Instance.Player.OnReleaseJumpButton();
+            Player.Instance.FinishGliding();
         }
     }
 }

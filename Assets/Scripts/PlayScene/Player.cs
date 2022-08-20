@@ -16,113 +16,122 @@ namespace FTS.PlayScene
 
     public class Player : MonoBehaviour
     {
+        private static Player instance = null;
+
+        public static Player Instance
+        {
+            get
+            {
+                return instance;
+            }
+        }
+
+        public readonly float BaseSpeed = 8;
+        public readonly float GlideSpeed = 10;
+        public readonly float DashSpeed = 18;
+        public readonly float DashCooldown = 10;
+
         private Rigidbody2D rb2d;
         private Animator animator;
-
-        [HideInInspector] public PlayerStatus status;
+        
         private readonly float gravityScale = 6;
+        private readonly int jumpPower = 16;
+        private readonly float glideSpeed = 2;
+        private readonly float dashDuration = 0.2f;
+        private readonly int flipSpeed = 10;
 
         private int jumpCount = 2;
-        private int jumpPower = 16;
-
-        private readonly float glideSpeed = 2;
         private int glideCount = 0;
 
-        private readonly float dashDuration = 0.2f;
-        [HideInInspector] public int dashCount = 3;
-        [HideInInspector] public readonly float dashCooldown = 10;
-        [HideInInspector] public float dashRemainingCooldown = 10;
+        public int DashCount { get; set; } = 3;
+        public float DashRemainingCooldown { get; set; } = 10;
+        
 
-        [HideInInspector] public bool hittable = true;
-
-        private int flipSpeed = 10;
+        public PlayerStatus Status { get; set; }
+        public float MoveSpeed { get; set; }
+        public bool Hittable { get; set; }
 
         private void Awake()
         {
+            if (instance)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            instance = this;
+
+            Status = PlayerStatus.Running;
+            MoveSpeed = BaseSpeed;
+            Hittable = true;
+
             rb2d = GetComponent<Rigidbody2D>();
             animator = GetComponent<Animator>();
-            status = PlayerStatus.Running;
         }
 
         private void Update()
         {
-            if (dashCount < 3)
+            if (DashCount < 3)
             {
-                dashRemainingCooldown = Mathf.Max(0, dashRemainingCooldown - Time.deltaTime);
-                if (dashRemainingCooldown == 0)
+                DashRemainingCooldown = Mathf.Max(0, DashRemainingCooldown - Time.deltaTime);
+                if (DashRemainingCooldown == 0)
                 {
-                    dashCount++;
-                    dashRemainingCooldown = dashCooldown;
+                    DashCount++;
+                    DashRemainingCooldown = DashCooldown;
                 }
-            }
-        }
-
-        public void OnPressJumpButton()
-        {
-            if (jumpCount > 0)
-            {
-                Jump();
-            }
-        }
-
-        public void OnHoldJumpButton()
-        {
-            if (jumpCount == 0 && glideCount > 0 && status == PlayerStatus.Jumping && rb2d.velocity.y < 0)
-            {
-                GlideStart();
-            }
-        }
-
-        public void OnReleaseJumpButton()
-        {
-            if (status == PlayerStatus.Gliding)
-            {
-                GlideEnd();
             }
         }
 
         public void OnClickDashButton()
         {
-            if (dashCount > 0 && status != PlayerStatus.Dashing)
+            if (DashCount > 0 && Status != PlayerStatus.Dashing)
             {
                 Dash();
             }
         }
 
-        private void Jump()
+        public void Jump()
         {
-            jumpCount--;
-            if (status == PlayerStatus.Running)
+            if (jumpCount > 0)
             {
-                glideCount = 1;
+                jumpCount--;
+                if (Status == PlayerStatus.Running)
+                {
+                    glideCount = 1;
+                }
+
+                animator.SetBool("Jump", true);
+                rb2d.velocity = Vector2.zero;
+                rb2d.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
+                Status = PlayerStatus.Jumping;
             }
-
-            animator.SetBool("Jump", true);
-            rb2d.velocity = Vector2.zero;
-            rb2d.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
-            status = PlayerStatus.Jumping;
         }
 
-        private void GlideStart()
+        public void StartGliding()
         {
-            glideCount--;
-            rb2d.velocity = Vector2.zero;
-            rb2d.gravityScale = 0;
-            PlayManager.Instance.Speed = PlayManager.Instance.GlideSpeed;
-            status = PlayerStatus.Gliding;
-            StartCoroutine(GlideCoroutine());
+            if (jumpCount == 0 && glideCount > 0 && Status == PlayerStatus.Jumping && rb2d.velocity.y < 0)
+            {
+                glideCount--;
+                rb2d.velocity = Vector2.zero;
+                rb2d.gravityScale = 0;
+                MoveSpeed = GlideSpeed;
+                Status = PlayerStatus.Gliding;
+                StartCoroutine(GlideCoroutine());
+            }
         }
 
-        private void GlideEnd()
+        public void FinishGliding()
         {
-            rb2d.gravityScale = gravityScale;
-            PlayManager.Instance.Speed = PlayManager.Instance.BaseSpeed;
-            status = PlayerStatus.Jumping;
+            if (Status == PlayerStatus.Gliding)
+            {
+                rb2d.gravityScale = gravityScale;
+                MoveSpeed = BaseSpeed;
+                Status = PlayerStatus.Jumping;
+            }
         }
 
         private IEnumerator GlideCoroutine()
         {
-            while (status == PlayerStatus.Gliding)
+            while (Status == PlayerStatus.Gliding)
             {
                 transform.Translate(glideSpeed * Time.smoothDeltaTime * Vector3.down);
                 yield return null;
@@ -136,45 +145,47 @@ namespace FTS.PlayScene
 
         private IEnumerator DashCoroutine()
         {
-            dashCount--;
+            Hittable = false;
+            DashCount--;
             rb2d.velocity = Vector2.zero;
 
             rb2d.gravityScale = 0;
-            PlayManager.Instance.Speed = PlayManager.Instance.DashSpeed;
-            status = PlayerStatus.Dashing;
+            MoveSpeed = DashSpeed;
+            Status = PlayerStatus.Dashing;
 
             yield return new WaitForSeconds(dashDuration);
 
             rb2d.gravityScale = gravityScale;
-            PlayManager.Instance.Speed = PlayManager.Instance.BaseSpeed;
-            status = PlayerStatus.Jumping;
+            MoveSpeed = BaseSpeed;
+            Status = PlayerStatus.Jumping;
+            Hittable = true;
         }
 
         private void Land()
         {
-            if (status == PlayerStatus.Jumping)
+            if (Status == PlayerStatus.Jumping)
             {
                 animator.SetBool("Jump", false);
             }
 
-            if (status == PlayerStatus.Gliding)
+            if (Status == PlayerStatus.Gliding)
             {
-                GlideEnd();
+                FinishGliding();
                 animator.SetBool("Jump", false);
             }
 
             jumpCount = 2;
             glideCount = 0;
-            status = PlayerStatus.Running;
+            Status = PlayerStatus.Running;
         }
 
         public void Hit()
         {
-            if (hittable)
+            if (Hittable)
             {
-                PlayManager.Instance.PlayerLife--;
-                PlayManager.Instance.MainCamera.Vibrate(0.2f, 0.3f);
-                PlayManager.Instance.UIController.PlayHitEffect();
+                PlaySceneManager.Instance.PlayerLife--;
+                PlaySceneManager.Instance.MainCamera.Vibrate(0.2f, 0.3f);
+                UIController.Instance.PlayHitEffect();
                 StartCoroutine(HitCoroutine());
             }
         }
@@ -183,7 +194,7 @@ namespace FTS.PlayScene
         {   
             float time = 2;
             float alpha = 0.5f;
-            hittable = false;
+            Hittable = false;
             var sr = GetComponent<SpriteRenderer>();
             sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, alpha);
 
@@ -223,12 +234,12 @@ namespace FTS.PlayScene
             sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, alpha);
             yield return new WaitForSeconds(0.5f);
 
-            hittable = true;
+            Hittable = true;
         }
 
         public void EnterFlipPhase()
         {
-            if (status == PlayerStatus.Gliding)
+            if (Status == PlayerStatus.Gliding)
             {
                 rb2d.velocity = Vector2.zero;
                 rb2d.gravityScale = gravityScale;
@@ -237,7 +248,7 @@ namespace FTS.PlayScene
 
         public void Flip()
         {
-            if (PlayManager.Instance.Phase == PlayPhase.Flip && status == PlayerStatus.Running)
+            if (PlaySceneManager.Instance.Phase == GamePhase.Flip && Status == PlayerStatus.Running)
             {
                 StartCoroutine(FlipCoroutine());
             }
@@ -245,12 +256,12 @@ namespace FTS.PlayScene
 
         private IEnumerator FlipCoroutine()
         {
-            PlayManager.Instance.Speed = 0;
+            MoveSpeed = 0;
             animator.SetBool("Flip", true);
-            status = PlayerStatus.Fliping;
+            Status = PlayerStatus.Fliping;
             yield return new WaitForSeconds(0.25f);
 
-            PlayManager.Instance.Speed = PlayManager.Instance.BaseSpeed;
+            MoveSpeed = BaseSpeed;
             float startPosY = transform.position.y;
             rb2d.velocity = Vector2.zero;
             rb2d.gravityScale = 0;
@@ -258,14 +269,14 @@ namespace FTS.PlayScene
             while (transform.position.y < startPosY + 18)
             {
                 transform.Translate(flipSpeed * Time.smoothDeltaTime * Vector3.up);
-                PlayManager.Instance.MainCamera.InitialPosition += flipSpeed * Time.smoothDeltaTime * Vector3.up;
+                PlaySceneManager.Instance.MainCamera.InitialPosition += flipSpeed * Time.smoothDeltaTime * Vector3.up;
                 yield return null;
             }
 
             transform.position = new Vector3(transform.position.x, startPosY + 18, transform.position.z);
-            PlayManager.Instance.MainCamera.InitialPosition = new Vector3(PlayManager.Instance.MainCamera.InitialPosition.x, 18, PlayManager.Instance.MainCamera.InitialPosition.z);
-            PlayManager.Instance.Phase = PlayPhase.Fly;
-            status = PlayerStatus.Flying;
+            PlaySceneManager.Instance.MainCamera.InitialPosition = new Vector3(PlaySceneManager.Instance.MainCamera.InitialPosition.x, 18, PlaySceneManager.Instance.MainCamera.InitialPosition.z);
+            PlaySceneManager.Instance.Phase = GamePhase.Fly;
+            Status = PlayerStatus.Flying;
             animator.SetBool("Flip", false);
         }
 

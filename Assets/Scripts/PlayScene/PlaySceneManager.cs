@@ -4,7 +4,7 @@ using FTS.TheBackend;
 
 namespace FTS.PlayScene
 {
-    public enum PlayPhase
+    public enum GamePhase
     {
         Run,
         Flip,
@@ -12,16 +12,13 @@ namespace FTS.PlayScene
         Land
     }
 
-    public class PlayManager : MonoBehaviour
+    public class PlaySceneManager : MonoBehaviour
     {
-        private static PlayManager instance = null;
+        private static PlaySceneManager instance = null;
 
-        public readonly float BaseSpeed = 8;
-        public readonly float GlideSpeed = 10;
-        public readonly float DashSpeed = 18;
         public readonly int MaxLife = 3;
 
-        public static PlayManager Instance
+        public static PlaySceneManager Instance
         {
             get
             {
@@ -29,12 +26,7 @@ namespace FTS.PlayScene
             }
         }
 
-        public PlayPhase Phase
-        {
-            get; set;
-        }
-
-        public float Speed
+        public GamePhase Phase
         {
             get; set;
         }
@@ -54,26 +46,13 @@ namespace FTS.PlayScene
             get; private set;
         }
 
-        public UIController UIController
-        {
-            get; private set;
-        }
-
-        public Player Player
-        {
-            get; private set;
-        }
-
-
         [SerializeField] private MainCamera mainCamera;
-        [SerializeField] private UIController uiController;
-        [SerializeField] private Player player;
 
         private void Awake()
         {
             if (instance)
             {
-                Destroy(this.gameObject);
+                Destroy(gameObject);
                 return;
             }
 
@@ -82,13 +61,10 @@ namespace FTS.PlayScene
 
         private void Start()
         {
-            Phase = PlayPhase.Run;
-            Speed = BaseSpeed;
+            Phase = GamePhase.Run;
             Dreampiece = 0;
             PlayerLife = MaxLife;
             MainCamera = mainCamera;
-            UIController = uiController;
-            Player = player;
         }
 
         private void Update()
@@ -99,51 +75,48 @@ namespace FTS.PlayScene
             }
         }
 
-        public void EnterPhase(PlayPhase phase)
+        public void EnterPhase(GamePhase phase)
         {
-            Debug.Log("EnterPhase(" + phase + ")");
-            if (phase == PlayPhase.Flip)
+            if (phase == GamePhase.Flip)
             {
-                Phase = PlayPhase.Flip;
-                Player.EnterFlipPhase();
+                Phase = GamePhase.Flip;
+                Player.Instance.EnterFlipPhase();
                 StartCoroutine(FlipPhaseCoroutine());
             }
-            if (phase == PlayPhase.Run)
+            if (phase == GamePhase.Run)
             {
-                Phase = PlayPhase.Run;
+                Phase = GamePhase.Run;
             }
-        }
-
-        public void ExitFlipPhase()
-        {
-            Phase = PlayPhase.Run;
         }
 
         private IEnumerator FlipPhaseCoroutine()
         {
             StartCoroutine(FlipTouchCoroutine());
-            UIController.flipTitle.SetActive(true);
-            UIController.dashButton.gameObject.SetActive(false);
-            UIController.jumpButton.gameObject.SetActive(false);
-            UIController.warnings.ShowWarning(2, 0, 8);
-            UIController.warnings.ShowWarning(3, 0, 8);
-            UIController.warnings.ShowWarning(4, 0, 8);
-            UIController.warnings.ShowWarning(5, 0, 8);
-            UIController.warnings.ShowWarning(6, 0, 8);
-            yield return new WaitForSeconds(3);
-            if (Player.status == PlayerStatus.Running)
-            {
-                UIController.flipTimer.gameObject.SetActive(true);
-                UIController.flipTimer.StartTimer();
-                Debug.Log("new WaitForSeconds(" + UIController.flipTimer.TimeLimit + ")");
-                yield return new WaitForSeconds(UIController.flipTimer.TimeLimit);
+            UIController.Instance.flipTitle.SetActive(true);
+            UIController.Instance.dashButton.gameObject.SetActive(false);
+            UIController.Instance.jumpButton.gameObject.SetActive(false);
 
-                if (Player.status == PlayerStatus.Running)
+            FlyingBlock[] flyingBlocks = new FlyingBlock[5];
+
+            for (var i = 0; i < 5; i++)
+            {
+                flyingBlocks[i] = FlyingBlockSpawner.Instance.SpawnHorizontalBlock(i + 1, 8);
+            }
+            yield return new WaitForSeconds(3);
+
+            if (Player.Instance.Status == PlayerStatus.Running)
+            {
+                UIController.Instance.flipTimer.gameObject.SetActive(true);
+                UIController.Instance.flipTimer.StartTimer();
+                Debug.Log("new WaitForSeconds(" + UIController.Instance.flipTimer.TimeLimit + ")");
+                yield return new WaitForSeconds(UIController.Instance.flipTimer.TimeLimit);
+
+                if (Player.Instance.Status == PlayerStatus.Running)
                 {
-                    UIController.flipTitle.SetActive(false);
-                    UIController.flipTimer.gameObject.SetActive(false);
-                    UIController.dashButton.gameObject.SetActive(true);
-                    UIController.jumpButton.gameObject.SetActive(true);
+                    UIController.Instance.flipTitle.SetActive(false);
+                    UIController.Instance.flipTimer.gameObject.SetActive(false);
+                    UIController.Instance.dashButton.gameObject.SetActive(true);
+                    UIController.Instance.jumpButton.gameObject.SetActive(true);
                 }
             }
         }
@@ -169,10 +142,14 @@ namespace FTS.PlayScene
                         if (endTouchPos.y > startTouchPos.y)
                         {
                             flipped = true;
-                            UIController.warnings.HideWarnings();
-                            UIController.flipTitle.SetActive(false);
-                            UIController.flipTimer.gameObject.SetActive(false);
-                            Player.Flip();
+                            int childCount = FlyingBlockSpawner.Instance.transform.childCount;
+                            for (int i = 0; i < childCount; i++)
+                            {
+                                FlyingBlockSpawner.Instance.transform.GetChild(i).GetComponent<FlyingBlock>().Destroy();
+                            }
+                            UIController.Instance.flipTitle.SetActive(false);
+                            UIController.Instance.flipTimer.gameObject.SetActive(false);
+                            Player.Instance.Flip();
                         }
                     }
                 }
@@ -181,10 +158,14 @@ namespace FTS.PlayScene
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
                     flipped = true;
-                    UIController.warnings.HideWarnings();
-                    UIController.flipTitle.SetActive(false);
-                    UIController.flipTimer.gameObject.SetActive(false);
-                    Player.Flip();
+                    int childCount = FlyingBlockSpawner.Instance.transform.childCount;
+                    for (int i = 0; i < childCount; i++)
+                    {
+                        FlyingBlockSpawner.Instance.transform.GetChild(i).GetComponent<FlyingBlock>().Destroy();
+                    }
+                    UIController.Instance.flipTitle.SetActive(false);
+                    UIController.Instance.flipTimer.gameObject.SetActive(false);
+                    Player.Instance.Flip();
                 }
 
                 yield return null;

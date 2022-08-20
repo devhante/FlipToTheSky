@@ -6,15 +6,15 @@ namespace FTS.PlayScene
 {
     public class Level : MonoBehaviour
     {
-        public PlayPhase phase;
+        public GamePhase phase;
 
         private void OnTriggerEnter2D(Collider2D collision)
         {
             if (collision.CompareTag("Player"))
             {
-                if (PlayManager.Instance.Phase != phase)
+                if (PlaySceneManager.Instance.Phase != phase)
                 {
-                    PlayManager.Instance.EnterPhase(phase);
+                    PlaySceneManager.Instance.EnterPhase(phase);
                 }
             }
         }
@@ -26,7 +26,7 @@ namespace FTS.PlayScene
                 Destroy(transform.gameObject);
             }
 
-            transform.Translate(PlayManager.Instance.Speed * Time.smoothDeltaTime * Vector3.left);
+            transform.Translate(Player.Instance.MoveSpeed * Time.smoothDeltaTime * Vector3.left);
         }
     }
 }
