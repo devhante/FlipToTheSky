@@ -29,6 +29,7 @@ namespace FTS.PlayScene
         public readonly float BaseSpeed = 8;
         public readonly float GlideSpeed = 10;
         public readonly float DashSpeed = 18;
+        public readonly int MaxDashCount = 3;
         public readonly float DashCooldown = 10;
 
         private Rigidbody2D rb2d;
@@ -43,10 +44,8 @@ namespace FTS.PlayScene
         private int jumpCount = 2;
         private int glideCount = 0;
 
-        public int DashCount { get; set; } = 3;
-        public float DashRemainingCooldown { get; set; } = 10;
-        
-
+        public int DashCount { get; set; }
+        public float RemainingDashCooldown { get; set; }
         public PlayerStatus Status { get; set; }
         public float MoveSpeed { get; set; }
         public bool Hittable { get; set; }
@@ -60,6 +59,8 @@ namespace FTS.PlayScene
             }
             instance = this;
 
+            DashCount = MaxDashCount;
+            RemainingDashCooldown = DashCooldown;
             Status = PlayerStatus.Running;
             MoveSpeed = BaseSpeed;
             Hittable = true;
@@ -72,11 +73,11 @@ namespace FTS.PlayScene
         {
             if (DashCount < 3)
             {
-                DashRemainingCooldown = Mathf.Max(0, DashRemainingCooldown - Time.deltaTime);
-                if (DashRemainingCooldown == 0)
+                RemainingDashCooldown = Mathf.Max(0, RemainingDashCooldown - Time.deltaTime);
+                if (RemainingDashCooldown == 0)
                 {
                     DashCount++;
-                    DashRemainingCooldown = DashCooldown;
+                    RemainingDashCooldown = DashCooldown;
                 }
             }
         }
@@ -184,7 +185,7 @@ namespace FTS.PlayScene
             if (Hittable)
             {
                 PlaySceneManager.Instance.PlayerLife--;
-                PlaySceneManager.Instance.MainCamera.Vibrate(0.2f, 0.3f);
+                MainCamera.Instance.Vibrate(0.2f, 0.3f);
                 UIController.Instance.PlayHitEffect();
                 StartCoroutine(HitCoroutine());
             }
@@ -269,12 +270,12 @@ namespace FTS.PlayScene
             while (transform.position.y < startPosY + 18)
             {
                 transform.Translate(flipSpeed * Time.smoothDeltaTime * Vector3.up);
-                PlaySceneManager.Instance.MainCamera.InitialPosition += flipSpeed * Time.smoothDeltaTime * Vector3.up;
+                MainCamera.Instance.InitialPosition += flipSpeed * Time.smoothDeltaTime * Vector3.up;
                 yield return null;
             }
 
             transform.position = new Vector3(transform.position.x, startPosY + 18, transform.position.z);
-            PlaySceneManager.Instance.MainCamera.InitialPosition = new Vector3(PlaySceneManager.Instance.MainCamera.InitialPosition.x, 18, PlaySceneManager.Instance.MainCamera.InitialPosition.z);
+            MainCamera.Instance.InitialPosition = new Vector3(MainCamera.Instance.InitialPosition.x, 18, MainCamera.Instance.InitialPosition.z);
             PlaySceneManager.Instance.Phase = GamePhase.Fly;
             Status = PlayerStatus.Flying;
             animator.SetBool("Flip", false);

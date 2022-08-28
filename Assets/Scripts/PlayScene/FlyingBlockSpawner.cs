@@ -63,7 +63,7 @@ namespace FTS.PlayScene
         public FlyingBlock SpawnHorizontalBlock(int index, float delay)
         {
             FlyingBlock result = null;
-            Vector2 cameraPos = PlaySceneManager.Instance.MainCamera.transform.position;
+            Vector2 cameraPos = MainCamera.Instance.transform.position;
 
             if (index < MaxHorizontalIndex)
             {
@@ -78,8 +78,8 @@ namespace FTS.PlayScene
         public FlyingBlock SpawnVerticalBlock(int index, float delay)
         {
             FlyingBlock result = null;
-            Vector2 cameraPos = PlaySceneManager.Instance.MainCamera.transform.position;
-
+            Vector2 cameraPos = MainCamera.Instance.transform.position;
+            
             if (index < MaxVerticalIndex)
             {
                 result = Instantiate(flyingUpBlock, cameraPos + flyingUpSpawnPointList[index], Quaternion.identity, transform).GetComponent<FlyingBlock>();

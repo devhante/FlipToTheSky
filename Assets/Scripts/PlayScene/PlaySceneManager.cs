@@ -16,8 +16,6 @@ namespace FTS.PlayScene
     {
         private static PlaySceneManager instance = null;
 
-        public readonly int MaxLife = 3;
-
         public static PlaySceneManager Instance
         {
             get
@@ -26,27 +24,12 @@ namespace FTS.PlayScene
             }
         }
 
-        public GamePhase Phase
-        {
-            get; set;
-        }
+        public readonly int MaxLife = 3;
 
-        public int Dreampiece
-        {
-            get; set;
-        }
+        public GamePhase Phase { get; set; }
+        public int Dreampiece { get; set; }
 
-        public int PlayerLife
-        {
-            get; set;
-        }
-
-        public MainCamera MainCamera
-        {
-            get; private set;
-        }
-
-        [SerializeField] private MainCamera mainCamera;
+        public int PlayerLife{ get; set; }
 
         private void Awake()
         {
@@ -64,7 +47,6 @@ namespace FTS.PlayScene
             Phase = GamePhase.Run;
             Dreampiece = 0;
             PlayerLife = MaxLife;
-            MainCamera = mainCamera;
         }
 
         private void Update()
@@ -93,8 +75,6 @@ namespace FTS.PlayScene
         {
             StartCoroutine(FlipTouchCoroutine());
             UIController.Instance.flipTitle.SetActive(true);
-            UIController.Instance.dashButton.gameObject.SetActive(false);
-            UIController.Instance.jumpButton.gameObject.SetActive(false);
 
             FlyingBlock[] flyingBlocks = new FlyingBlock[5];
 
@@ -108,15 +88,12 @@ namespace FTS.PlayScene
             {
                 UIController.Instance.flipTimer.gameObject.SetActive(true);
                 UIController.Instance.flipTimer.StartTimer();
-                Debug.Log("new WaitForSeconds(" + UIController.Instance.flipTimer.TimeLimit + ")");
                 yield return new WaitForSeconds(UIController.Instance.flipTimer.TimeLimit);
 
                 if (Player.Instance.Status == PlayerStatus.Running)
                 {
                     UIController.Instance.flipTitle.SetActive(false);
                     UIController.Instance.flipTimer.gameObject.SetActive(false);
-                    UIController.Instance.dashButton.gameObject.SetActive(true);
-                    UIController.Instance.jumpButton.gameObject.SetActive(true);
                 }
             }
         }

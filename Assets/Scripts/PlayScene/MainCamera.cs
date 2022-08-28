@@ -6,6 +6,16 @@ namespace FTS.PlayScene
 {
     public class MainCamera : MonoBehaviour
     {
+        private static MainCamera instance = null;
+
+        public static MainCamera Instance
+        {
+            get
+            {
+                return instance;
+            }
+        }
+
         private float shakeAmount;
         private float shakeTime;
 
@@ -18,6 +28,17 @@ namespace FTS.PlayScene
         {
             shakeAmount = amount;
             shakeTime = time;
+        }
+
+        private void Awake()
+        {
+            if (instance)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            instance = this;
         }
 
         private void Start()

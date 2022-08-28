@@ -6,7 +6,7 @@ namespace FTS.PlayScene
 {
     public enum FlyingDirection { Left, Up };
 
-    public class FlyingBlock : MonoBehaviour
+    public class FlyingBlock : Block
     {
         public FlyingDirection direction;
 
