@@ -5801,6 +5801,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   jumpButton: {fileID: 1339072338}
   dashButton: {fileID: 1621164918}
+  joystick: {fileID: 2145008536}
   pauseMask: {fileID: 1012704507}
   hitEffect: {fileID: 1156777865}
   flipTitle: {fileID: 1602675714}
@@ -6344,7 +6345,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2145008537
 RectTransform:
   m_ObjectHideFlags: 0

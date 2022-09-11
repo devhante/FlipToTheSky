@@ -29,6 +29,7 @@ namespace FTS.PlayScene
         public readonly float BaseSpeed = 8;
         public readonly float GlideSpeed = 10;
         public readonly float DashSpeed = 18;
+        public readonly float FlipSpeed = 10;
         public readonly int MaxDashCount = 3;
         public readonly float DashCooldown = 10;
 
@@ -39,7 +40,6 @@ namespace FTS.PlayScene
         private readonly int jumpPower = 16;
         private readonly float glideSpeed = 2;
         private readonly float dashDuration = 0.2f;
-        private readonly int flipSpeed = 10;
 
         private int jumpCount = 2;
         private int glideCount = 0;
@@ -269,8 +269,8 @@ namespace FTS.PlayScene
 
             while (transform.position.y < startPosY + 18)
             {
-                transform.Translate(flipSpeed * Time.smoothDeltaTime * Vector3.up);
-                MainCamera.Instance.InitialPosition += flipSpeed * Time.smoothDeltaTime * Vector3.up;
+                transform.Translate(FlipSpeed * Time.smoothDeltaTime * Vector3.up);
+                MainCamera.Instance.InitialPosition += FlipSpeed * Time.smoothDeltaTime * Vector3.up;
                 yield return null;
             }
 
@@ -279,6 +279,11 @@ namespace FTS.PlayScene
             PlaySceneManager.Instance.Phase = GamePhase.Fly;
             Status = PlayerStatus.Flying;
             animator.SetBool("Flip", false);
+        }
+
+        public void Move(Vector3 direction)
+        {
+
         }
 
         private void OnCollisionEnter2D(Collision2D collision)

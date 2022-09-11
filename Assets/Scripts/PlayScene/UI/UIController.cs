@@ -18,6 +18,7 @@ namespace FTS.PlayScene
 
         public GameObject jumpButton;
         public GameObject dashButton;
+        public GameObject joystick;
         public GameObject pauseMask;
         public GameObject hitEffect;
 
@@ -38,6 +39,7 @@ namespace FTS.PlayScene
         {
             jumpButton.SetActive(PlaySceneManager.Instance.Phase == GamePhase.Run);
             dashButton.SetActive(PlaySceneManager.Instance.Phase == GamePhase.Run);
+            joystick.SetActive(PlaySceneManager.Instance.Phase == GamePhase.Fly);
         }
 
         public void PlayHitEffect()

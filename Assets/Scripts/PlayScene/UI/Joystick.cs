@@ -23,7 +23,6 @@ namespace FTS.PlayScene
             radius = rt.sizeDelta.x * 0.5f;
         }
 
-
         public void OnPointerDown(PointerEventData eventData)
         {
             OnDrag(eventData);
