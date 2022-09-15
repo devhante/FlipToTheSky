@@ -19,9 +19,8 @@ namespace FTS.PlayScene
         {
             levelCount = 1;
             levelPhase = GamePhase.Run;
-            Instantiate(runLevels[Random.Range(0, runLevels.Length)], new Vector3(30, 0, 0), Quaternion.identity);
-            Instantiate(runLevels[Random.Range(0, runLevels.Length)], new Vector3(60, 0, 0), Quaternion.identity);
-            lastLevel = Instantiate(runLevels[Random.Range(0, runLevels.Length)], new Vector3(90, 0, 0), Quaternion.identity);
+            Instantiate(runLevels[Random.Range(0, runLevels.Length)], new Vector3(44, 0, 0), Quaternion.identity);
+            lastLevel = Instantiate(runLevels[Random.Range(0, runLevels.Length)], new Vector3(104, 0, 0), Quaternion.identity);
             StartCoroutine(SpawnFlyBlockCoroutine());
         }
 
@@ -54,7 +53,7 @@ namespace FTS.PlayScene
 
         private void LateUpdate()
         {
-            if (lastLevel.transform.position.x <= 60)
+            if (lastLevel.transform.position.x <= 44)
             {
                 if (levelCount <= 0)
                 {
@@ -83,16 +82,16 @@ namespace FTS.PlayScene
                 switch (levelPhase)
                 {
                     case GamePhase.Run:
-                        lastLevel = Instantiate(runLevels[Random.Range(0, runLevels.Length)], new Vector3(lastLevel.transform.position.x + 30, 0, 0), Quaternion.identity);
+                        lastLevel = Instantiate(runLevels[Random.Range(0, runLevels.Length)], new Vector3(lastLevel.transform.position.x + 60, 0, 0), Quaternion.identity);
                         break;
                     case GamePhase.Flip:
-                        lastLevel = Instantiate(flipLevel, new Vector3(lastLevel.transform.position.x + 30, 0, 0), Quaternion.identity);
+                        lastLevel = Instantiate(flipLevel, new Vector3(lastLevel.transform.position.x + 60, 0, 0), Quaternion.identity);
                         break;
                     case GamePhase.Fly:
-                        lastLevel = Instantiate(runLevels[Random.Range(0, runLevels.Length)], new Vector3(lastLevel.transform.position.x + 30, 0, 0), Quaternion.identity);
+                        lastLevel = Instantiate(runLevels[Random.Range(0, runLevels.Length)], new Vector3(lastLevel.transform.position.x + 60, 0, 0), Quaternion.identity);
                         break;
                     case GamePhase.Land:
-                        lastLevel = Instantiate(runLevels[Random.Range(0, runLevels.Length)], new Vector3(lastLevel.transform.position.x + 30, 0, 0), Quaternion.identity);
+                        lastLevel = Instantiate(runLevels[Random.Range(0, runLevels.Length)], new Vector3(lastLevel.transform.position.x + 60, 0, 0), Quaternion.identity);
                         break;
                 }
 

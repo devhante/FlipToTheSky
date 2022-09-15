@@ -21,7 +21,7 @@ namespace FTS.PlayScene
 
         private void Update()
         {
-            if (transform.position.x < -64)
+            if (transform.position.x < -200)
             {
                 Destroy(transform.gameObject);
             }
