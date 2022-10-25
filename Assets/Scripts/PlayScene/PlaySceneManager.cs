@@ -55,19 +55,29 @@ namespace FTS.PlayScene
             {
                 GameOver();
             }
+            Debug.Log(Phase);
         }
 
         public void EnterPhase(GamePhase phase)
         {
+            if (phase == GamePhase.Run)
+            {
+                Phase = GamePhase.Run;
+            }
             if (phase == GamePhase.Flip)
             {
                 Phase = GamePhase.Flip;
                 Player.Instance.EnterFlipPhase();
                 StartCoroutine(FlipPhaseCoroutine());
             }
-            if (phase == GamePhase.Run)
+            if (phase == GamePhase.Fly)
             {
-                Phase = GamePhase.Run;
+                Phase = GamePhase.Fly;
+            }
+            if (phase == GamePhase.Land)
+            {
+                Phase = GamePhase.Land;
+                Player.Instance.EnterLandPhase();
             }
         }
 

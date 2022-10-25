@@ -7,6 +7,16 @@ namespace FTS.PlayScene
 {
     public class Joystick : MonoBehaviour, IDragHandler, IPointerUpHandler, IPointerDownHandler
     {
+        private static Joystick instance = null;
+
+        public static Joystick Instance
+        {
+            get
+            {
+                return instance;
+            }
+        }
+
         public Vector3 Normal { get; private set; }
 
         private RectTransform rt;
@@ -17,6 +27,13 @@ namespace FTS.PlayScene
 
         private void Awake()
         {
+            if (instance)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            instance = this;
+
             rt = GetComponent<RectTransform>();
             handleRT = transform.GetChild(0).GetComponent<RectTransform>();
             canvas = transform.parent.GetComponent<Canvas>();
@@ -34,12 +51,14 @@ namespace FTS.PlayScene
             if (mousePos.magnitude > 1) mousePos = mousePos.normalized;
             if (mousePos.magnitude <= 0) mousePos = Vector2.zero;
             handleRT.anchoredPosition = mousePos * radius;
+            Normal = mousePos.normalized;
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
             mousePos = Vector2.zero;
             handleRT.anchoredPosition = Vector2.zero;
+            Normal = mousePos.normalized;
         }
     }
 }

@@ -12,6 +12,7 @@ namespace FTS.PlayScene
         Dashing,
         Fliping,
         Flying,
+        Landing
     }
 
     public class Player : MonoBehaviour
@@ -40,7 +41,9 @@ namespace FTS.PlayScene
         private readonly int jumpPower = 16;
         private readonly float glideSpeed = 2;
         private readonly float dashDuration = 0.2f;
+        private readonly float flyMoveSpeed = 5;
 
+        private Vector3 originPos;
         private int jumpCount = 2;
         private int glideCount = 0;
 
@@ -67,6 +70,7 @@ namespace FTS.PlayScene
 
             rb2d = GetComponent<Rigidbody2D>();
             animator = GetComponent<Animator>();
+            originPos = transform.position;
         }
 
         private void Update()
@@ -279,11 +283,40 @@ namespace FTS.PlayScene
             PlaySceneManager.Instance.Phase = GamePhase.Fly;
             Status = PlayerStatus.Flying;
             animator.SetBool("Flip", false);
+            StartCoroutine(MoveCoroutine());
+            
         }
 
-        public void Move(Vector3 direction)
+        private IEnumerator MoveCoroutine()
         {
+            while (PlaySceneManager.Instance.Phase == GamePhase.Fly)
+            {
+                if (Joystick.Instance)
+                {
+                    transform.Translate(Joystick.Instance.Normal * flyMoveSpeed * Time.smoothDeltaTime);
+                }
 
+                yield return null;
+            }
+
+            StartCoroutine(MoveOriginPosCoroutine());
+        }
+
+        public void EnterLandPhase()
+        {
+            Status = PlayerStatus.Landing;
+        }
+
+        private IEnumerator MoveOriginPosCoroutine()
+        {
+            while (transform.position != originPos)
+            {
+                // TODO
+                Vector3 cameraPos = new Vector3(MainCamera.Instance.transform.position.x, MainCamera.Instance.transform.position.y);
+                Vector3 direction = -(transform.position - originPos + cameraPos).normalized;
+                transform.Translate(direction * Time.deltaTime * 5.0f);
+                yield return null;
+            }
         }
 
         private void OnCollisionEnter2D(Collision2D collision)

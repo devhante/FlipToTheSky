@@ -69,6 +69,7 @@ namespace FTS.PlayScene
                     }
                     else if (levelPhase == GamePhase.Fly)
                     {
+                        Debug.Log("Land!");
                         levelPhase = GamePhase.Land;
                         levelCount = 3;
                     }
@@ -88,10 +89,10 @@ namespace FTS.PlayScene
                         lastLevel = Instantiate(flipLevel, new Vector3(lastLevel.transform.position.x + 60, 0, 0), Quaternion.identity);
                         break;
                     case GamePhase.Fly:
-                        lastLevel = Instantiate(runLevels[Random.Range(0, runLevels.Length)], new Vector3(lastLevel.transform.position.x + 60, 0, 0), Quaternion.identity);
+                        lastLevel = Instantiate(flyLevels[Random.Range(0, flyLevels.Length)], new Vector3(lastLevel.transform.position.x + 60, 0, 0), Quaternion.identity);
                         break;
                     case GamePhase.Land:
-                        lastLevel = Instantiate(runLevels[Random.Range(0, runLevels.Length)], new Vector3(lastLevel.transform.position.x + 60, 0, 0), Quaternion.identity);
+                        lastLevel = Instantiate(landLevel, new Vector3(lastLevel.transform.position.x + 60, 0, 0), Quaternion.identity);
                         break;
                 }
 
